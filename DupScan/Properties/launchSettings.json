@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DupScan": {
+      "commandName": "Project",
+      "commandLineArgs": "eBooks",
+      "workingDirectory": "m:\\"
+    }
+  }
+}
