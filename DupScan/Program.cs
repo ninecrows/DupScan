@@ -39,6 +39,8 @@ namespace DupScan
     {
         static void Main(string[] args)
         {
+            //TestNative.GetFileInformation.CallMe("Foo.json");
+
             List<string> filesOfInterest = new List<string>();
 
             string where = Directory.GetCurrentDirectory();

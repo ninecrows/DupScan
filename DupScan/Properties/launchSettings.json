@@ -3,7 +3,11 @@
     "DupScan": {
       "commandName": "Project",
       "commandLineArgs": "eBooks",
-      "workingDirectory": "m:\\"
+      "workingDirectory": "i:\\",
+      "nativeDebugging": true
+    },
+    "newProfile1": {
+      "commandName": "Executable"
     }
   }
 }
