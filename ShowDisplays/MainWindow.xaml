@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ShowDisplays"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="MainGrid" Loaded="OnLoad" VerticalAlignment="Top">
-        
-    </Grid>
+    <StackPanel x:Name="MainGrid" Loaded="OnLoad" VerticalAlignment="Top">
+        <StackPanel x:Name="DisplaysList" HorizontalAlignment="Left" Height="0" Margin="361,266,0,-266" VerticalAlignment="Top" Width="100"/>
+
+    </StackPanel>
 </Window>

@@ -340,6 +340,8 @@ namespace DupScan
             // Track known things...
             Dictionary<String, List<FileInformation>> knownFiles = new Dictionary<String, List<FileInformation>>();
 
+            int totalFiles = filesOfInterest.Count;
+            int processedFiles = 0;
             foreach (string file in filesOfInterest)
             {
                 FileInfo information = new FileInfo(file);
@@ -359,8 +361,12 @@ namespace DupScan
                         }
                         string result = builder.ToString();
 
+                        Console.WriteLine("[" + processedFiles + " of " + totalFiles + "]");
                         Console.WriteLine("\"" + file + "\"");
                         Console.WriteLine("    " + asBase64);
+
+                        // Bump the processed files count.
+                        processedFiles += 1;
 
                         if (!knownFiles.ContainsKey(asBase64))
                         {
