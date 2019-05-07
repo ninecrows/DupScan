@@ -339,7 +339,9 @@ namespace DupScan
 
             // Track known things...
             Dictionary<String, List<FileInformation>> knownFiles = new Dictionary<String, List<FileInformation>>();
+            Dictionary<String, List<FileInformation>> workingFiles = new Dictionary<String, List<FileInformation>>();
 
+            filesOfInterest.Sort();
             int totalFiles = filesOfInterest.Count;
             int processedFiles = 0;
             foreach (string file in filesOfInterest)
@@ -364,6 +366,7 @@ namespace DupScan
                         Console.WriteLine("[" + processedFiles + " of " + totalFiles + "]");
                         Console.WriteLine("\"" + file + "\"");
                         Console.WriteLine("    " + asBase64);
+                        string id = TestNative.GetFileInformation.GetFileIdentity(file);
 
                         // Bump the processed files count.
                         processedFiles += 1;
@@ -372,15 +375,57 @@ namespace DupScan
                         {
                             knownFiles.Add(asBase64, new List<FileInformation>());
                         }
+                        else
+                        {
+                            Console.WriteLine("-{0}- Entries", knownFiles[asBase64].Count + 1);
+                        }
 
                         // Add in another known instance of this file.
                         knownFiles[asBase64].Add(new FileInformation(file));
+
+                        if (!workingFiles.ContainsKey(asBase64))
+                        {
+                            workingFiles.Add(asBase64, new List<FileInformation>());
+
+                            // Add in our kept file...
+                            workingFiles[asBase64].Add(new FileInformation(file));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Keep {0}", workingFiles[asBase64][0].path);
+
+                            //FileInformation thisOne = file;
+
+
+                            //int endSeparator = thisOne.path.LastIndexOf('\\');
+
+                            string pathPart = file.Substring(target.Length);
+                            int endSeparator = pathPart.LastIndexOf('\\');
+                            string finalPart = pathPart.Substring(0, endSeparator);
+                            string baseName = pathPart.Substring(endSeparator + 1);
+                            string altPath = alt + finalPart;
+                            if (!Directory.Exists(altPath))
+                            {
+                                Directory.CreateDirectory(altPath);
+                            }
+
+                            string altName = altPath + "\\" + baseName;
+                            if (!File.Exists(altName))
+                            {
+                                File.Move(file, altName);
+                                Console.WriteLine("Move {0} -> {1}", file, altName);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Skip {0} -> {1}", file, altName);
+                            }
+                        }
                     }
                 }
             }
 
             Console.WriteLine("Found " + knownFiles.Count + " unique files out of " + filesOfInterest.Count);
-
+#if false
             // Walk through the list of unique files that we found...
             foreach (string key in knownFiles.Keys)
             {
@@ -413,6 +458,7 @@ namespace DupScan
                     }
                 }
             }
+#endif
 
             MemoryStream stream = new MemoryStream();
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
