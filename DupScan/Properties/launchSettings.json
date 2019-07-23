@@ -3,7 +3,7 @@
     "DupScan": {
       "commandName": "Project",
       "commandLineArgs": "eBooks",
-      "workingDirectory": "c:\\Local\\",
+      "workingDirectory": "C:\\local",
       "nativeDebugging": true
     },
     "newProfile1": {

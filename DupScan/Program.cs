@@ -316,6 +316,30 @@ namespace DupScan
 
             List<string> filesOfInterest = new List<string>();
 
+            Dictionary<String, List<FileInformation>> oldFiles = new Dictionary<String, List<FileInformation>>();
+            Dictionary<String, FileInformation> nameToFileInformation = new Dictionary<String, FileInformation>();
+            Dictionary<String, String> nameToHash = new Dictionary<String, String>();
+            {
+                FileStream instream = File.OpenRead("index.json");
+                DataContractJsonSerializer inserializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
+                oldFiles = (Dictionary<String, List<FileInformation>>)inserializer.ReadObject(instream);                                      
+
+                //stream.Position = 0;
+                //FileStream output = File.Create("index.json");
+                //stream.CopyTo(output);
+                //output.Close();
+            }
+
+            foreach (String hash in oldFiles.Keys)
+            {
+                List<FileInformation> files = oldFiles[hash];
+                foreach (FileInformation information in files)
+                {
+                    nameToHash[information.path] = hash;
+                    nameToFileInformation[information.path] = information;
+                }
+            }
+
             string where = Directory.GetCurrentDirectory();
 
             string target = ".";
@@ -460,15 +484,15 @@ namespace DupScan
             }
 #endif
 
-            MemoryStream stream = new MemoryStream();
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
-            serializer.WriteObject(stream, knownFiles);
+                MemoryStream stream = new MemoryStream();
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
+                serializer.WriteObject(stream, knownFiles);
 
-            stream.Position = 0;
-            FileStream output = File.Create("index.json");
-            stream.CopyTo(output);
-            output.Close();
-        }
+                stream.Position = 0;
+                FileStream output = File.Create("index.json");
+                stream.CopyTo(output);
+                output.Close();
+            }
         
         private static void getFilesIn(string where, List<string> files)
         {
