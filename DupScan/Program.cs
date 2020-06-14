@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace DupScan
 {
@@ -24,6 +25,8 @@ namespace DupScan
             size = information.Length;
 
             directory = information.DirectoryName;
+
+            String fileId = TestNative.GetFileInformation.GetFileIdentity(fileName);
         }
 
         public string path;
@@ -34,6 +37,30 @@ namespace DupScan
         public string created8601;
         public DateTime modified;
         public string modified8601;
+
+        [OptionalField]
+        public string fileId;
+
+        [OptionalField]
+        public string fileHash;
+
+        public bool FileMatches(FileInfo realFile)
+        {
+            bool result = false;
+
+            if (path == realFile.FullName)
+            {
+                if (size == realFile.Length)
+                {
+                    if (modified == realFile.LastWriteTime)
+                    {
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 
     class Program
@@ -318,28 +345,50 @@ namespace DupScan
 
             Dictionary<String, List<FileInformation>> oldFiles = new Dictionary<String, List<FileInformation>>();
             Dictionary<String, FileInformation> nameToFileInformation = new Dictionary<String, FileInformation>();
+            Dictionary<String, FileInformation> idToFIleInformation = new Dictionary<String, FileInformation>();
             Dictionary<String, String> nameToHash = new Dictionary<String, String>();
+
+            // If we have an existing index for this folder then lets use it.
+            if (File.Exists("index.json"))
             {
-                FileStream instream = File.OpenRead("index.json");
-                DataContractJsonSerializer inserializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
-                oldFiles = (Dictionary<String, List<FileInformation>>)inserializer.ReadObject(instream);                                      
+                if (System.IO.File.Exists("index.json"))
+                {
+                    FileStream instream = File.OpenRead("index.json");
+                    DataContractJsonSerializer inserializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
+                    oldFiles = (Dictionary<String, List<FileInformation>>)inserializer.ReadObject(instream);
+                }
 
                 //stream.Position = 0;
                 //FileStream output = File.Create("index.json");
                 //stream.CopyTo(output);
                 //output.Close();
-            }
 
-            foreach (String hash in oldFiles.Keys)
-            {
-                List<FileInformation> files = oldFiles[hash];
-                foreach (FileInformation information in files)
+                // Build look ups...
+                foreach (String hash in oldFiles.Keys)
                 {
-                    nameToHash[information.path] = hash;
-                    nameToFileInformation[information.path] = information;
+                    List<FileInformation> files = oldFiles[hash];
+                    foreach (FileInformation information in files)
+                    {
+                        // Store the hash back into the object if it isn't already there.
+                        if (information.fileHash == null)
+                        {
+                            information.fileHash = hash;
+                        }
+
+                        // Store the file id if it isn't alraedy there.
+                        if ((information.fileId == null) && File.Exists(information.path))
+                        {
+                            String fileId = TestNative.GetFileInformation.GetFileIdentity(information.path);
+                            information.fileId = fileId;
+
+                            Console.WriteLine("Got {0} -> {1}", fileId, information.path);
+                        }
+
+                        nameToHash[information.path] = hash;
+                        nameToFileInformation[information.path] = information;
+                    }
                 }
             }
-
             string where = Directory.GetCurrentDirectory();
 
             string target = ".";
@@ -359,6 +408,7 @@ namespace DupScan
                 }
             }
 
+            // List of files that we could look at...
             getFilesIn(target, filesOfInterest);
 
             // Track known things...
@@ -373,6 +423,18 @@ namespace DupScan
                 FileInfo information = new FileInfo(file);
                 if (information.Length < (2L * 1024L * 1024L * 1024L) - 1L)
                 {
+                    if (nameToFileInformation.ContainsKey(file))
+                    {
+                        if (nameToFileInformation[file].FileMatches(information))
+                        {
+                            Console.WriteLine(">" + file + "< already found");
+                        }
+                        else
+                        {
+                            Console.WriteLine("#" + file + "# not found");
+                        }
+                    }
+
                     byte[] data = File.ReadAllBytes(file);
                     using (SHA256 hash = SHA256.Create())
                     {
