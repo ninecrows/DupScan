@@ -2,8 +2,8 @@
   "profiles": {
     "DupScan": {
       "commandName": "Project",
-      "commandLineArgs": "ebooks",
-      "workingDirectory": "L:\\",
+      "commandLineArgs": "Games",
+      "workingDirectory": "H:\\EBooks\\Processed",
       "nativeDebugging": true
     },
     "newProfile1": {

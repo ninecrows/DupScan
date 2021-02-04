@@ -1,47 +1,258 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
-namespace TestNative
+namespace C9Native
 {
     // Handle PInvoke for this function
     /*
-     * BOOL GetFileInformationByHandleExW(
-  HANDLE                    hFile,
-  FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
-  LPVOID                    lpFileInformation,
-  DWORD                     dwBufferSize
-);
+     BOOL 
+     GetFileInformationByHandleExW(
+        HANDLE hFile,
+        FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+        LPVOID lpFileInformation,
+        DWORD dwBufferSize
+        );
      */
-    // Returning at least the 
 
+    /// <summary>
+    /// Mode select enumeration for GetFileInformationByHandleExW(...)
+    /// </summary>
     enum FILE_INFO_BY_HANDLE_CLASS
     {
+        /// <summary>
+        /// Select FILE_BASIC_INFO return
+        /// </summary>
         FileBasicInfo,
+
+        /// <summary>
+        /// Select FILE_STANDARD_INFO return
+        /// </summary>
         FileStandardInfo,
+
+        /// <summary>
+        /// Select FILE_NAME_INFO return
+        /// </summary>
         FileNameInfo,
+
+        /// <summary>
+        /// Select FILE_RENAME_INFO return from GetFileInformationByHandleExW()
+        /// </summary>
         FileRenameInfo,
+
+        /// <summary>
+        /// Select FILE_DISPOSITION_INFO return
+        /// </summary>
         FileDispositionInfo,
+
+        /// <summary>
+        /// Select FILE ALLOCATION INFO. return
+        /// </summary>
         FileAllocationInfo,
+
+        /// <summary>
+        /// Select FILE_END_OF_FILE_INFO return
+        /// </summary>
         FileEndOfFileInfo,
+
+        /// <summary>
+        /// Select FILE_STREAM_INFO return
+        /// </summary>
         FileStreamInfo,
+
+        /// <summary>
+        /// Select FILE_COMPRESSION_INFO return
+        /// </summary>
         FileCompressionInfo,
+
+        /// <summary>
+        /// Select FILE_ATTRIBUTE_TAG_INFO return
+        /// </summary>
         FileAttributeTagInfo,
+
+        /// <summary>
+        /// Select FILE_ID_BOTH_DIR_INFO return
+        /// </summary>
         FileIdBothDirectoryInfo,
+
+        /// <summary>
+        /// Select FILE_ID_BOTH_DIR_INFO return
+        /// </summary>
         FileIdBothDirectoryRestartInfo,
+
+        /// <summary>
+        /// Select FILE_IO_PRIORITY_HINT_INFO return
+        /// </summary>
         FileIoPriorityHintInfo,
+
+        /// <summary>
+        /// Select FILE_REMOTE_PROTOCOL_INFO return
+        /// </summary>
         FileRemoteProtocolInfo,
+
+        /// <summary>
+        /// Select FILE_FULL_DIR_INFO return
+        /// </summary>
         FileFullDirectoryInfo,
+
+        /// <summary>
+        /// Select FILE_FULL_DIR_INFO return
+        /// </summary>
         FileFullDirectoryRestartInfo,
+
+        /// <summary>
+        /// Select FILE_STORAGE_INFO return
+        /// </summary>
         FileStorageInfo,
+        
+        /// <summary>
+        /// Select FILE_ALIGNMENT_INFO return
+        /// </summary>
         FileAlignmentInfo,
+
+        /// <summary>
+        /// Select FILE_ID_INFO return
+        /// </summary>
         FileIdInfo,
+
+        /// <summary>
+        /// Select FILE_ID_EXTD_DIR_INFO return
+        /// </summary>
         FileIdExtdDirectoryInfo,
+
+        /// <summary>
+        /// Select FILE_ID_EXTD_DIR_INFO return
+        /// </summary>
         FileIdExtdDirectoryRestartInfo,
+
+        /// <summary>
+        /// 
+        /// </summary>
         FileDispositionInfoEx,
+
+        /// <summary>
+        /// 
+        /// </summary>
         FileRenameInfoEx,
+
+        /// <summary>
+        /// End of this enumeration
+        /// </summary>
         MaximumFileInfoByHandleClass
     };
 
+    [Flags]
+    public enum FileSystemFeature : uint
+    {
+        /// <summary>
+        /// The file system preserves the case of file names when it places a name on disk.
+        /// </summary>
+        CasePreservedNames = 2,
+
+        /// <summary>
+        /// The file system supports case-sensitive file names.
+        /// </summary>
+        CaseSensitiveSearch = 1,
+
+        /// <summary>
+        /// The specified volume is a direct access (DAX) volume. This flag was introduced in Windows 10, version 1607.
+        /// </summary>
+        DaxVolume = 0x20000000,
+
+        /// <summary>
+        /// The file system supports file-based compression.
+        /// </summary>
+        FileCompression = 0x10,
+
+        /// <summary>
+        /// The file system supports named streams.
+        /// </summary>
+        NamedStreams = 0x40000,
+
+        /// <summary>
+        /// The file system preserves and enforces access control lists (ACL).
+        /// </summary>
+        PersistentACLS = 8,
+
+        /// <summary>
+        /// The specified volume is read-only.
+        /// </summary>
+        ReadOnlyVolume = 0x80000,
+
+        /// <summary>
+        /// The volume supports a single sequential write.
+        /// </summary>
+        SequentialWriteOnce = 0x100000,
+
+        /// <summary>
+        /// The file system supports the Encrypted File System (EFS).
+        /// </summary>
+        SupportsEncryption = 0x20000,
+
+        /// <summary>
+        /// The specified volume supports extended attributes. An extended attribute is a piece of
+        /// application-specific metadata that an application can associate with a file and is not part
+        /// of the file's data.
+        /// </summary>
+        SupportsExtendedAttributes = 0x00800000,
+
+        /// <summary>
+        /// The specified volume supports hard links. For more information, see Hard Links and Junctions.
+        /// </summary>
+        SupportsHardLinks = 0x00400000,
+
+        /// <summary>
+        /// The file system supports object identifiers.
+        /// </summary>
+        SupportsObjectIDs = 0x10000,
+
+        /// <summary>
+        /// The file system supports open by FileID. For more information, see FILE_ID_BOTH_DIR_INFO.
+        /// </summary>
+        SupportsOpenByFileId = 0x01000000,
+
+        /// <summary>
+        /// The file system supports re-parse points.
+        /// </summary>
+        SupportsReparsePoints = 0x80,
+
+        /// <summary>
+        /// The file system supports sparse files.
+        /// </summary>
+        SupportsSparseFiles = 0x40,
+
+        /// <summary>
+        /// The volume supports transactions.
+        /// </summary>
+        SupportsTransactions = 0x200000,
+
+        /// <summary>
+        /// The specified volume supports update sequence number (USN) journals. For more information,
+        /// see Change Journal Records.
+        /// </summary>
+        SupportsUsnJournal = 0x02000000,
+
+        /// <summary>
+        /// The file system supports Unicode in file names as they appear on disk.
+        /// </summary>
+        UnicodeOnDisk = 4,
+
+        /// <summary>
+        /// The specified volume is a compressed volume, for example, a DoubleSpace volume.
+        /// </summary>
+        VolumeIsCompressed = 0x8000,
+
+        /// <summary>
+        /// The file system supports disk quotas.
+        /// </summary>
+        VolumeQuotas = 0x20
+    }
+
+
+
+    /// <summary>
+    /// Output data layout for GetFileInformationByHandleExW(...) with 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct FILE_ID_128
     {
@@ -71,21 +282,39 @@ namespace TestNative
 
     public class GetFileInformation
     {
+        [DllImport("Kernel32.dll", EntryPoint = "GetVolumeInformationW", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetVolumeInformationW(
+                string rootPathName,
+                StringBuilder volumeNameBuffer,
+                int volumeNameSize,
+                out uint volumeSerialNumber,
+                out uint maximumComponentLength,
+                out FileSystemFeature fileSystemFlags,
+                StringBuilder fileSystemNameBuffer,
+                int nFileSystemNameSize
+            );
+
         [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleEx", SetLastError = true)]
-        static extern /*BOOL*/ bool GetFileInformationByHandleExW(
+        static extern 
+            /*BOOL*/ bool GetFileInformationByHandleExW(
             /*HANDLE*/ IntPtr hFile,
             FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+
             ///*LPVOID*/ IntPtr lpFileInformation,
             ref FILE_ID_INFO result,
-            /*DWORD*/ UInt32 dwBufferSize);
+
+            /*DWORD*/ UInt32 dwBufferSize
+            );
 
         [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleExW", SetLastError = true)]
         static extern /*BOOL*/ bool GetRawFileInformationByHandleExW(
-    /*HANDLE*/ IntPtr hFile,
-    FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
-            ///*LPVOID*/ IntPtr lpFileInformation,
-            IntPtr result,
-    /*DWORD*/ UInt32 dwBufferSize);
+                                                /*HANDLE*/ IntPtr hFile,
+                                                FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+                                                ///*LPVOID*/ IntPtr lpFileInformation,
+                                                IntPtr result,
+                                                /*DWORD*/ UInt32 dwBufferSize
+            );
 
         //[DllImport("kernel32.dll", SetLastError = true)]
         //private static extern bool GetFileInformationByHandleEx(IntPtr hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_ID_BOTH_DIR_INFO dirInfo, uint dwBufferSize);
@@ -93,9 +322,9 @@ namespace TestNative
         [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandle", SetLastError = true)]
         static extern
         /*BOOL*/ Boolean GetFileInformationByHandle(
-/*HANDLE*/ IntPtr hFile,
-out BY_HANDLE_FILE_INFORMATION lpFileInformation
-);
+                                                /*HANDLE*/ IntPtr hFile,
+                                                out BY_HANDLE_FILE_INFORMATION lpFileInformation
+                                                    );
 
         [StructLayout(LayoutKind.Sequential)]
         struct MyData
@@ -299,18 +528,19 @@ out BY_HANDLE_FILE_INFORMATION lpFileInformation
             PosixSemantics = 0x01000000,
             OpenReparsePoint = 0x00200000,
             OpenNoRecall = 0x00100000,
-			FirstPipeInstance = 0x00080000
+            FirstPipeInstance = 0x00080000
         }
 
-		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-		public static extern IntPtr CreateFileW(
-							[MarshalAs(UnmanagedType.LPWStr)] string filename,
- [MarshalAs(UnmanagedType.U4)] EFileAccess access,
- [MarshalAs(UnmanagedType.U4)] EFileShare share,
- IntPtr securityAttributes,
- [MarshalAs(UnmanagedType.U4)] ECreationDisposition creationDisposition,
- [MarshalAs(UnmanagedType.U4)] EFileAttributes flagsAndAttributes,
- IntPtr templateFile);
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr CreateFileW(
+                            [MarshalAs(UnmanagedType.LPWStr)] string filename,
+                            [MarshalAs(UnmanagedType.U4)] EFileAccess access,
+                            [MarshalAs(UnmanagedType.U4)] EFileShare share,
+                            IntPtr securityAttributes,
+                            [MarshalAs(UnmanagedType.U4)] ECreationDisposition creationDisposition,
+                            [MarshalAs(UnmanagedType.U4)] EFileAttributes flagsAndAttributes,
+                            IntPtr templateFile
+            );
 
         //   [DllImport("kernel32.dll", EntryPoint = "CreateFileW")]
         //   static extern IntPtr /*HANDLE*/ CreateFileW(
@@ -323,7 +553,7 @@ out BY_HANDLE_FILE_INFORMATION lpFileInformation
         // /*HANDLE*/ IntPtr hTemplateFile);
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
+        static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)] string lpFileName);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool CloseHandle(IntPtr hHandle);
@@ -349,20 +579,20 @@ out BY_HANDLE_FILE_INFORMATION lpFileInformation
 
         static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
-        public static string GetFileIdentity(string path)
+        public static String GetFileIdentity(String path)
         {
             string result = null;
 
             IntPtr handle = INVALID_HANDLE_VALUE;
             try
             {
-                 handle = CreateFileW(path,
-                    EFileAccess.FILE_READ_ATTRIBUTES,
-                    EFileShare.Read,
-                    (IntPtr)null,
-                    ECreationDisposition.OpenExisting,
-                    EFileAttributes.Normal,
-                    (IntPtr)null);
+                handle = CreateFileW(path,
+                   EFileAccess.FILE_READ_ATTRIBUTES,
+                   EFileShare.Read,
+                   (IntPtr)null,
+                   ECreationDisposition.OpenExisting,
+                   EFileAttributes.Normal,
+                   (IntPtr)null);
 
                 // We obtained a handle, now time to use it.
                 if (handle != INVALID_HANDLE_VALUE)
@@ -371,14 +601,14 @@ out BY_HANDLE_FILE_INFORMATION lpFileInformation
 
                     bool ok = GetFileInformationByHandle(handle, out information);
 
-                    result = string.Format("{0:X4}-{1:x4}:{2:X8}.{3:X8}", 
+                    result = string.Format("{0:X4}-{1:x4}:{2:X8}.{3:X8}",
                         information.dwVolumeSerialNumber >> 16, information.dwVolumeSerialNumber & 0xffff,
                         information.nFileIndexHigh, information.nFileIndexLow);
                     //result = information.dwVolumeSerialNumber + ":" + information.nFileIndexHigh + "." + information.nFileIndexLow;
                 }
             }
             finally
-            {               
+            {
                 if (handle != INVALID_HANDLE_VALUE)
                 {
                     CloseHandle(handle);

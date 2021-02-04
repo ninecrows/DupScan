@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using MongoDB.Driver;
 
 namespace DupScan
 {
@@ -26,7 +28,7 @@ namespace DupScan
 
             directory = information.DirectoryName;
 
-            String fileId = TestNative.GetFileInformation.GetFileIdentity(fileName);
+            String fileId = C9Native.GetFileInformation.GetFileIdentity(fileName);
         }
 
         public string path;
@@ -44,11 +46,33 @@ namespace DupScan
         [OptionalField]
         public string fileHash;
 
+        public String GetName()
+        {
+            String checkPath;
+
+            var pieces = path.Split('\\');
+
+            return (pieces.Last());
+        }
+
+        public String GetFullPath()
+        {
+            return (directory + "\\" + GetName());
+        }
+
+        public bool PathMatches(String realFile)
+        {
+            String fullPath = GetFullPath().ToLower();
+            String realPath = realFile.ToLower();
+
+            return (fullPath.Equals(realPath));
+        }
+
         public bool FileMatches(FileInfo realFile)
         {
             bool result = false;
 
-            if (path == realFile.FullName)
+            if (PathMatches(realFile.FullName))
             {
                 if (size == realFile.Length)
                 {
@@ -348,14 +372,43 @@ namespace DupScan
             Dictionary<String, FileInformation> idToFIleInformation = new Dictionary<String, FileInformation>();
             Dictionary<String, String> nameToHash = new Dictionary<String, String>();
 
+            MongoClient client = null;
+            IMongoDatabase database = null;
+            try
+            {
+                client = new MongoClient("mongodb://walrus:27017");
+                database = client.GetDatabase("EBooks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to connect to MongoDb \"" + ex.ToString() + "\"");
+                //throw;
+            }
+
+
+            IMongoCollection<MongoDB.Bson.BsonDocument> fileslist = null;
+            if (database != null)
+            {
+                fileslist = database.GetCollection<MongoDB.Bson.BsonDocument>("FilesList");
+            }
+
             // If we have an existing index for this folder then lets use it.
             if (File.Exists("index.json"))
             {
                 if (System.IO.File.Exists("index.json"))
                 {
-                    FileStream instream = File.OpenRead("index.json");
-                    DataContractJsonSerializer inserializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
-                    oldFiles = (Dictionary<String, List<FileInformation>>)inserializer.ReadObject(instream);
+                    try
+                    {
+                        FileStream instream = File.OpenRead("index.json");
+                        DataContractJsonSerializer inserializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
+                        oldFiles = (Dictionary<String, List<FileInformation>>)inserializer.ReadObject(instream);
+                        instream.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception reading index \"" + ex.ToString() + "\"");
+                        //throw;
+                    }
                 }
 
                 //stream.Position = 0;
@@ -378,10 +431,10 @@ namespace DupScan
                         // Store the file id if it isn't alraedy there.
                         if ((information.fileId == null) && File.Exists(information.path))
                         {
-                            String fileId = TestNative.GetFileInformation.GetFileIdentity(information.path);
+                            String fileId = C9Native.GetFileInformation.GetFileIdentity(information.path);
                             information.fileId = fileId;
 
-                            Console.WriteLine("Got {0} -> {1}", fileId, information.path);
+                            //Console.WriteLine("Got {0} -> {1}", fileId, information.path);
                         }
 
                         nameToHash[information.path] = hash;
@@ -412,6 +465,7 @@ namespace DupScan
             getFilesIn(target, filesOfInterest);
 
             // Track known things...
+            Dictionary<String, List<FileInformation>> previousFiles = new Dictionary<String, List<FileInformation>>();
             Dictionary<String, List<FileInformation>> knownFiles = new Dictionary<String, List<FileInformation>>();
             Dictionary<String, List<FileInformation>> workingFiles = new Dictionary<String, List<FileInformation>>();
 
@@ -423,89 +477,126 @@ namespace DupScan
                 FileInfo information = new FileInfo(file);
                 if (information.Length < (2L * 1024L * 1024L * 1024L) - 1L)
                 {
-                    if (nameToFileInformation.ContainsKey(file))
+                    try
                     {
-                        if (nameToFileInformation[file].FileMatches(information))
+                        if (nameToFileInformation.ContainsKey(file))
                         {
-                            Console.WriteLine(">" + file + "< already found");
-                        }
-                        else
-                        {
-                            Console.WriteLine("#" + file + "# not found");
-                        }
-                    }
-
-                    byte[] data = File.ReadAllBytes(file);
-                    using (SHA256 hash = SHA256.Create())
-                    {
-                        byte[] hashValue = hash.ComputeHash(data);
-
-                        string asBase64 = Convert.ToBase64String(hashValue);
-
-                        StringBuilder builder = new StringBuilder();
-                        foreach (byte value in hashValue)
-                        {
-                            builder.Append(value.ToString("x2"));
-                        }
-                        string result = builder.ToString();
-
-                        Console.WriteLine("[" + processedFiles + " of " + totalFiles + "]");
-                        Console.WriteLine("\"" + file + "\"");
-                        Console.WriteLine("    " + asBase64);
-                        string id = TestNative.GetFileInformation.GetFileIdentity(file);
-
-                        // Bump the processed files count.
-                        processedFiles += 1;
-
-                        if (!knownFiles.ContainsKey(asBase64))
-                        {
-                            knownFiles.Add(asBase64, new List<FileInformation>());
-                        }
-                        else
-                        {
-                            Console.WriteLine("-{0}- Entries", knownFiles[asBase64].Count + 1);
-                        }
-
-                        // Add in another known instance of this file.
-                        knownFiles[asBase64].Add(new FileInformation(file));
-
-                        if (!workingFiles.ContainsKey(asBase64))
-                        {
-                            workingFiles.Add(asBase64, new List<FileInformation>());
-
-                            // Add in our kept file...
-                            workingFiles[asBase64].Add(new FileInformation(file));
-                        }
-                        else
-                        {
-                            Console.WriteLine("Keep {0}", workingFiles[asBase64][0].path);
-
-                            //FileInformation thisOne = file;
-
-
-                            //int endSeparator = thisOne.path.LastIndexOf('\\');
-
-                            string pathPart = file.Substring(target.Length);
-                            int endSeparator = pathPart.LastIndexOf('\\');
-                            string finalPart = pathPart.Substring(0, endSeparator);
-                            string baseName = pathPart.Substring(endSeparator + 1);
-                            string altPath = alt + finalPart;
-                            if (!Directory.Exists(altPath))
+                            if (nameToFileInformation[file].FileMatches(information))
                             {
-                                Directory.CreateDirectory(altPath);
-                            }
+                                Console.WriteLine(">" + file + "< already found");
+                                if (!previousFiles.ContainsKey(file))
+                                {
+                                    previousFiles[file] = new List<FileInformation>();
+                                }
 
-                            string altName = altPath + "\\" + baseName;
-                            if (!File.Exists(altName))
-                            {
-                                File.Move(file, altName);
-                                Console.WriteLine("Move {0} -> {1}", file, altName);
+                                // Find the pieces of information we normally need.
+                                var myInformation = nameToFileInformation[file];
+                                String asBase64 = nameToFileInformation[file].fileHash;
+                                previousFiles[file].Add(nameToFileInformation[file]);
+
+                                // If we don't have an entry for this hash yet then we need to add one.
+                                if (!knownFiles.ContainsKey(asBase64))
+                                {
+                                    knownFiles[asBase64] = new List<FileInformation>();
+                                }
+
+                                // Add the file entry to this hash item.
+                                knownFiles[asBase64].Add(myInformation);
+
+                                Console.WriteLine("Previous \"" + file + "\"");
                             }
                             else
                             {
-                                Console.WriteLine("Skip {0} -> {1}", file, altName);
+                                Console.WriteLine("#" + file + "# not found");
                             }
                         }
+                        else
+                        {
+                            String asBase64 = null;
+                            String result = "";
+                            byte[] data = File.ReadAllBytes(file);
+                            using (SHA256 hash = SHA256.Create())
+                            {
+                                byte[] hashValue = hash.ComputeHash(data);
+
+                                asBase64 = Convert.ToBase64String(hashValue);
+
+
+                                StringBuilder builder = new StringBuilder();
+                                foreach (byte value in hashValue)
+                                {
+                                    builder.Append(value.ToString("x2"));
+                                }
+
+                                result = builder.ToString();
+                            }
+
+                            Console.WriteLine("[" + processedFiles + " of " + totalFiles + "]");
+                            Console.WriteLine("\"" + file + "\"");
+                            Console.WriteLine("    " + asBase64);
+                            string id = C9Native.GetFileInformation.GetFileIdentity(file);
+
+                            // Bump the processed files count.
+                            processedFiles += 1;
+
+                            //if (previousFiles.ContainsKey(file))
+                           // {
+                            //    Console.WriteLine("Already Known \"" + file + "\"");
+                            //}
+
+                            if (!knownFiles.ContainsKey(asBase64))
+                            {
+                                knownFiles.Add(asBase64, new List<FileInformation>());
+                            }
+                            else
+                            {
+                                Console.WriteLine("-{0}- Entries", knownFiles[asBase64].Count + 1);
+                            }
+
+                            // Add in another known instance of this file.
+                            knownFiles[asBase64].Add(new FileInformation(file));
+
+                            if (!workingFiles.ContainsKey(asBase64))
+                            {
+                                workingFiles.Add(asBase64, new List<FileInformation>());
+
+                                // Add in our kept file...
+                                workingFiles[asBase64].Add(new FileInformation(file));
+                            }
+                            else
+                            {
+                                Console.WriteLine("Keep {0}", workingFiles[asBase64][0].path);
+
+                                //FileInformation thisOne = file;
+
+
+                                //int endSeparator = thisOne.path.LastIndexOf('\\');
+
+                                string pathPart = file.Substring(target.Length);
+                                int endSeparator = pathPart.LastIndexOf('\\');
+                                string finalPart = pathPart.Substring(0, endSeparator);
+                                string baseName = pathPart.Substring(endSeparator + 1);
+                                string altPath = alt + finalPart;
+                                if (!Directory.Exists(altPath))
+                                {
+                                    Directory.CreateDirectory(altPath);
+                                }
+
+                                string altName = altPath + "\\" + baseName;
+                                if (!File.Exists(altName))
+                                {
+                                    File.Move(file, altName);
+                                    Console.WriteLine("Move {0} -> {1}", file, altName);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Skip {0} -> {1}", file, altName);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
                     }
                 }
             }
@@ -550,11 +641,14 @@ namespace DupScan
                 DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<String, List<FileInformation>>));
                 serializer.WriteObject(stream, knownFiles);
 
-                stream.Position = 0;
-                FileStream output = File.Create("index.json");
-                stream.CopyTo(output);
-                output.Close();
-            }
+                if (false)
+                {
+                    stream.Position = 0;
+                    FileStream output = File.Create("index.json");
+                    stream.CopyTo(output);
+                    output.Close();
+                }
+        }
         
         private static void getFilesIn(string where, List<string> files)
         {

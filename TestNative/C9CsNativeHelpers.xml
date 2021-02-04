@@ -1,0 +1,302 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>C9CsNativeHelpers</name>
+    </assembly>
+    <members>
+        <member name="T:C9Native.FILE_INFO_BY_HANDLE_CLASS">
+            <summary>
+            Mode select enumeration for GetFileInformationByHandleExW(...)
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileBasicInfo">
+            <summary>
+            Select FILE_BASIC_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileStandardInfo">
+            <summary>
+            Select FILE_STANDARD_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileNameInfo">
+            <summary>
+            Select FILE_NAME_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileRenameInfo">
+            <summary>
+            Select FILE_RENAME_INFO return from GetFileInformationByHandleExW()
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileDispositionInfo">
+            <summary>
+            Select FILE_DISPOSITION_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileAllocationInfo">
+            <summary>
+            Select FILE ALLOCATION INFO. return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileEndOfFileInfo">
+            <summary>
+            Select FILE_END_OF_FILE_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileStreamInfo">
+            <summary>
+            Select FILE_STREAM_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileCompressionInfo">
+            <summary>
+            Select FILE_COMPRESSION_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileAttributeTagInfo">
+            <summary>
+            Select FILE_ATTRIBUTE_TAG_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileIdBothDirectoryInfo">
+            <summary>
+            Select FILE_ID_BOTH_DIR_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileIdBothDirectoryRestartInfo">
+            <summary>
+            Select FILE_ID_BOTH_DIR_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileIoPriorityHintInfo">
+            <summary>
+            Select FILE_IO_PRIORITY_HINT_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileRemoteProtocolInfo">
+            <summary>
+            Select FILE_REMOTE_PROTOCOL_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileFullDirectoryInfo">
+            <summary>
+            Select FILE_FULL_DIR_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileFullDirectoryRestartInfo">
+            <summary>
+            Select FILE_FULL_DIR_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileStorageInfo">
+            <summary>
+            Select FILE_STORAGE_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileAlignmentInfo">
+            <summary>
+            Select FILE_ALIGNMENT_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileIdInfo">
+            <summary>
+            Select FILE_ID_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileIdExtdDirectoryInfo">
+            <summary>
+            Select FILE_ID_EXTD_DIR_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileIdExtdDirectoryRestartInfo">
+            <summary>
+            Select FILE_ID_EXTD_DIR_INFO return
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileDispositionInfoEx">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.FileRenameInfoEx">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.FILE_INFO_BY_HANDLE_CLASS.MaximumFileInfoByHandleClass">
+            <summary>
+            End of this enumeration
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.CasePreservedNames">
+            <summary>
+            The file system preserves the case of file names when it places a name on disk.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.CaseSensitiveSearch">
+            <summary>
+            The file system supports case-sensitive file names.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.DaxVolume">
+            <summary>
+            The specified volume is a direct access (DAX) volume. This flag was introduced in Windows 10, version 1607.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.FileCompression">
+            <summary>
+            The file system supports file-based compression.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.NamedStreams">
+            <summary>
+            The file system supports named streams.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.PersistentACLS">
+            <summary>
+            The file system preserves and enforces access control lists (ACL).
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.ReadOnlyVolume">
+            <summary>
+            The specified volume is read-only.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SequentialWriteOnce">
+            <summary>
+            The volume supports a single sequential write.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsEncryption">
+            <summary>
+            The file system supports the Encrypted File System (EFS).
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsExtendedAttributes">
+            <summary>
+            The specified volume supports extended attributes. An extended attribute is a piece of
+            application-specific metadata that an application can associate with a file and is not part
+            of the file's data.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsHardLinks">
+            <summary>
+            The specified volume supports hard links. For more information, see Hard Links and Junctions.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsObjectIDs">
+            <summary>
+            The file system supports object identifiers.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsOpenByFileId">
+            <summary>
+            The file system supports open by FileID. For more information, see FILE_ID_BOTH_DIR_INFO.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsReparsePoints">
+            <summary>
+            The file system supports re-parse points.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsSparseFiles">
+            <summary>
+            The file system supports sparse files.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsTransactions">
+            <summary>
+            The volume supports transactions.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.SupportsUsnJournal">
+            <summary>
+            The specified volume supports update sequence number (USN) journals. For more information,
+            see Change Journal Records.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.UnicodeOnDisk">
+            <summary>
+            The file system supports Unicode in file names as they appear on disk.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.VolumeIsCompressed">
+            <summary>
+            The specified volume is a compressed volume, for example, a DoubleSpace volume.
+            </summary>
+        </member>
+        <member name="F:C9Native.FileSystemFeature.VolumeQuotas">
+            <summary>
+            The file system supports disk quotas.
+            </summary>
+        </member>
+        <member name="T:C9Native.FILE_ID_128">
+            <summary>
+            Output data layout for GetFileInformationByHandleExW(...) with 
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileShare.None">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileShare.Read">
+            <summary>
+            Enables subsequent open operations on an object to request read access. 
+            Otherwise, other processes cannot open the object if they request read access. 
+            If this flag is not specified, but the object has been opened for read access, the function fails.
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileShare.Write">
+            <summary>
+            Enables subsequent open operations on an object to request write access. 
+            Otherwise, other processes cannot open the object if they request write access. 
+            If this flag is not specified, but the object has been opened for write access, the function fails.
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileShare.Delete">
+            <summary>
+            Enables subsequent open operations on an object to request delete access. 
+            Otherwise, other processes cannot open the object if they request delete access.
+            If this flag is not specified, but the object has been opened for delete access, the function fails.
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.ECreationDisposition.New">
+            <summary>
+            Creates a new file. The function fails if a specified file exists.
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.ECreationDisposition.CreateAlways">
+            <summary>
+            Creates a new file, always. 
+            If a file exists, the function overwrites the file, clears the existing attributes, combines the specified file attributes, 
+            and flags with FILE_ATTRIBUTE_ARCHIVE, but does not set the security descriptor that the SECURITY_ATTRIBUTES structure specifies.
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.ECreationDisposition.OpenExisting">
+            <summary>
+            Opens a file. The function fails if the file does not exist. 
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.ECreationDisposition.OpenAlways">
+            <summary>
+            Opens a file, always. 
+            If a file does not exist, the function creates a file as if dwCreationDisposition is CREATE_NEW.
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.ECreationDisposition.TruncateExisting">
+            <summary>
+            Opens a file and truncates it so that its size is 0 (zero) bytes. The function fails if the file does not exist.
+            The calling process must open the file with the GENERIC_WRITE access right. 
+            </summary>
+        </member>
+        <member name="M:C9Native.GetFileInformation.LoadLibraryW(System.String)">
+            *DWORD*/ UInt32 dwCreationDisposition,
+        </member>
+        <member name="M:C9Native.GetFileInformation.GetProcAddress(System.IntPtr,System.String)">
+            *LPCSTR*/ string lpLibFileName
+        </member>
+    </members>
+</doc>
