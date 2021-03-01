@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\C9FileHelpers.csproj" />
+    <ProjectReference Include="..\ClassLibrary1\C9FileHelpersCX.csproj" />
     <ProjectReference Include="..\TestNative\C9CsNativeHelpers.csproj" />
   </ItemGroup>
 

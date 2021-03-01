@@ -18,12 +18,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestTarget", "TestTarget\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowDisplays", "ShowDisplays\ShowDisplays.csproj", "{E28D5F11-D20D-4A4E-A862-E1218C6731D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C9FileHelpers", "ClassLibrary1\C9FileHelpers.csproj", "{2AE495BA-28A2-49AC-B4F8-A30EF6487124}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C9FileHelpersCX", "ClassLibrary1\C9FileHelpersCX.csproj", "{2AE495BA-28A2-49AC-B4F8-A30EF6487124}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C8A6823D-F716-4C00-9A33-CC0D42D00E6E} = {C8A6823D-F716-4C00-9A33-CC0D42D00E6E}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C9FIleWatcher", "C9FIleWatcher\C9FIleWatcher.csproj", "{C17259EC-C8A1-43E9-8FAC-7957ADE4617D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C9FileHelpers", "C9FileHelpers\C9FileHelpers.csproj", "{F54446A8-E45E-4ECB-95FA-9FE02D24185D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,18 @@ Global
 		{C17259EC-C8A1-43E9-8FAC-7957ADE4617D}.Release|x64.Build.0 = Release|Any CPU
 		{C17259EC-C8A1-43E9-8FAC-7957ADE4617D}.Release|x86.ActiveCfg = Release|Any CPU
 		{C17259EC-C8A1-43E9-8FAC-7957ADE4617D}.Release|x86.Build.0 = Release|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Debug|x64.Build.0 = Debug|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Debug|x86.Build.0 = Debug|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x64.ActiveCfg = Release|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x64.Build.0 = Release|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x86.ActiveCfg = Release|Any CPU
+		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

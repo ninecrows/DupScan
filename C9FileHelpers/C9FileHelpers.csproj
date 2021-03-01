@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TestNative\C9CsNativeHelpers.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -7,8 +7,8 @@
     <ProjectGuid>{2AE495BA-28A2-49AC-B4F8-A30EF6487124}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClassLibrary1</RootNamespace>
-    <AssemblyName>ClassLibrary1</AssemblyName>
+    <RootNamespace>C9FileHelpers</RootNamespace>
+    <AssemblyName>C9FileHelpers</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
