@@ -39,6 +39,17 @@ namespace C9FileHelpers
         public /*DateTime*/ ExTimeStamp modified;
         //public string modified8601;
 
+        /// <summary>
+        /// The path to the file (not including file name or drive letter) as an ordered list of path elements.
+        /// </summary>
+        [OptionalField] public string[] pathElements;
+
+        /// <summary>
+        /// The drive letter that this file was most recently associated with.
+        /// </summary>
+        [OptionalField] public string driveLetter;
+
+
         [OptionalField]
         public string fileId;
 
@@ -68,17 +79,7 @@ namespace C9FileHelpers
         /// Timestamp when this file was most recently recorded.
         /// </summary>
         [OptionalField] public DateTime lastSeen;
-
-        /// <summary>
-        /// The path to the file (not including file name or drive letter) as an ordered list of path elements.
-        /// </summary>
-        [OptionalField] public string[] pathElements;
-
-        /// <summary>
-        /// The drive letter that this file was most recently associated with.
-        /// </summary>
-        [OptionalField] public string driveLetter;
-
+        
         /// <summary>
         /// The label string for the drive on which this file was most recently seen.
         /// </summary>

@@ -580,6 +580,8 @@ namespace DupScan
                         if ((information.fileId == null) && File.Exists(information.path))
                         {
                             var newStyle = new C9FileHelpers.FileInformation(information.path);
+                            string jjj = JsonConvert.SerializeObject(newStyle, Formatting.Indented);
+                            log.Add(jjj);
 
                             String fileId = C9Native.GetFileInformation.GetFileIdentity(information.path);
                             information.fileId = fileId;
