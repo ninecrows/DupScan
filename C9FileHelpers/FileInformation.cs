@@ -53,17 +53,10 @@ namespace C9FileHelpers
         [OptionalField]
         public string fileId;
 
-        [OptionalField]
-        public string fileHashSha256;
-
-        [OptionalField]
-        public string fileHashSha512;
-
-        [OptionalField]
-        public string fileHashSha1;
-
-        [OptionalField]
-        public string fileHashMd5;
+        /// <summary>
+        /// Hashed data stored for this file.
+        /// </summary>
+        [OptionalField] public FileHashes hashes;
 
         /// <summary>
         /// Volume ID of the drive volume this file resides on.
@@ -124,46 +117,6 @@ namespace C9FileHelpers
         /// Optional human provided information on book type files.
         /// </summary>
         [OptionalField] public BookInformation book;
-
-        /// <summary>
-        /// Book publisher if a book.
-        /// </summary>
-       // [OptionalField] public string publisher;
-
-        /// <summary>
-        /// Book authors if a book.
-        /// </summary>
-       // [OptionalField] public string[] authors;
-
-        /// <summary>
-        /// Book title if a book.
-        /// </summary>
-       // [OptionalField] public string title;
-
-        /// <summary>
-        /// Book pages if a book.
-        /// </summary>
-       // [OptionalField] public int pages;
-
-        /// <summary>
-        /// Book copyrighht date if a book.
-        /// </summary>
-        //[OptionalField] public int copyright;
-
-        /// <summary>
-        /// Book edition (if any) if a book.
-        /// </summary>
-        //[OptionalField] public string edition;
-
-        /// <summary>
-        /// Quality of this file if any. Types of damage and other related issues as a string.
-        /// </summary>
-       // [OptionalField] public string quality;
-
-        /// <summary>
-        /// Categories that this item is part of. Could be fiction, games, sf, fantasy, techincal, C# or many others. Used to facilitate searches.
-        /// </summary>
-        //[OptionalField] public string[] categories;
 
         public String GetName()
         {
