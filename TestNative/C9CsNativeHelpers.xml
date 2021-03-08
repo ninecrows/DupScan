@@ -1,9 +1,151 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>C9CsNativeHelpers</name>
+        <name>C9Native</name>
     </assembly>
     <members>
+        <member name="T:C9Native.BaseFileHandle">
+            <summary>
+            Wrapper with RAII constructor for opening a read only native file handle.
+            </summary>
+        </member>
+        <member name="P:C9Native.BaseFileHandle.Handle">
+            <summary>
+            Handle that will be filled in by the CTOR and used subsequently.
+            </summary>
+        </member>
+        <member name="P:C9Native.BaseFileHandle.Status">
+            <summary>
+            Retrieve completion status information if there is a failure.
+            </summary>
+        </member>
+        <member name="P:C9Native.BaseFileHandle.IsOk">
+            <summary>
+            Return true if this object was loaded successfully.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.InvalidHandleValue">
+            <summary>
+            Invalid handle value for comparison.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.NullHandleValue">
+            <summary>
+            Null handle value for comparison.
+            </summary>
+        </member>
+        <member name="P:C9Native.BaseFileHandle.Path">
+            <summary>
+            Return the path that was used to open this file handle.
+            </summary>
+        </member>
+        <member name="M:C9Native.BaseFileHandle.ReadOnlyHandleFactory(System.String)">
+            <summary>
+            Factory for read only file handles.
+            </summary>
+            <param name="path">Path to the file that we want a native handle for.</param>
+            <returns>File handle container</returns>
+        </member>
+        <member name="M:C9Native.BaseFileHandle.#ctor(System.String,C9Native.BaseFileHandle.EFileAccess,C9Native.BaseFileHandle.EFileShare,System.IntPtr,C9Native.BaseFileHandle.ECreationDisposition,C9Native.BaseFileHandle.EFileAttributes,System.IntPtr)">
+            <summary>
+            Base native handle constructor. Call up from 'live' class.
+            </summary>
+            <param name="path">Path to file that we want a handle to</param>
+            <param name="inAccess">Access parameters</param>
+            <param name="inShare">Sharing access</param>
+            <param name="inSecurity">Security descriptor</param>
+            <param name="inCreation">Creation parameters</param>
+            <param name="inAttributes">File attributes if we create a new file</param>
+            <param name="inTemplate">Template file</param>
+        </member>
+        <member name="M:C9Native.BaseFileHandle.Dispose">
+            <summary>
+            Release native handle if we hold one.
+            Atomic exchange so this should be thread safe.
+            </summary>
+        </member>
+        <member name="M:C9Native.BaseFileHandle.IsHandleValid(System.IntPtr)">
+            <summary>
+            Return true if this object contains a valid handle.
+            </summary>
+            <param name="handle">handle to be checked</param>
+            <returns>true if the provided handle is valid</returns>
+        </member>
+        <member name="T:C9Native.BaseFileHandle.ECreationDisposition">
+            <summary>
+            Control of file creation.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.ECreationDisposition.New">
+            <summary>
+            Creates a new file. The function fails if a specified file exists.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.ECreationDisposition.CreateAlways">
+            <summary>
+            Creates a new file, always.
+            If a file exists, the function overwrites the file, clears the existing attributes, combines the specified file attributes,
+            and flags with FILE_ATTRIBUTE_ARCHIVE, but does not set the security descriptor that the SECURITY_ATTRIBUTES structure specifies.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.ECreationDisposition.OpenExisting">
+            <summary>
+            Opens a file. The function fails if the file does not exist.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.ECreationDisposition.OpenAlways">
+            <summary>
+            Opens a file, always.
+            If a file does not exist, the function creates a file as if dwCreationDisposition is CREATE_NEW.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.ECreationDisposition.TruncateExisting">
+            <summary>
+            Opens a file and truncates it so that its size is 0 (zero) bytes. The function fails if the file does not exist.
+            The calling process must open the file with the GENERIC_WRITE access right.
+            </summary>
+        </member>
+        <member name="T:C9Native.BaseFileHandle.EFileAttributes">
+            <summary>
+            Flags for control of attributes.
+            </summary>
+        </member>
+        <member name="T:C9Native.BaseFileHandle.EFileShare">
+            <summary>
+            Flags that control sharing.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.EFileShare.None">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.EFileShare.Read">
+            <summary>
+            Enables subsequent open operations on an object to request read access.
+            Otherwise, other processes cannot open the object if they request read access.
+            If this flag is not specified, but the object has been opened for read access, the function fails.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.EFileShare.Write">
+            <summary>
+            Enables subsequent open operations on an object to request write access.
+            Otherwise, other processes cannot open the object if they request write access.
+            If this flag is not specified, but the object has been opened for write access, the function fails.
+            </summary>
+        </member>
+        <member name="F:C9Native.BaseFileHandle.EFileShare.Delete">
+            <summary>
+            Enables subsequent open operations on an object to request delete access.
+            Otherwise, other processes cannot open the object if they request delete access.
+            If this flag is not specified, but the object has been opened for delete access, the function fails.
+            </summary>
+        </member>
+        <member name="T:C9Native.BaseFileHandle.EFileAccess">
+            <summary>
+            Flags controlling access
+            </summary>
+        </member>
         <member name="T:C9Native.FILE_INFO_BY_HANDLE_CLASS">
             <summary>
             Mode select enumeration for GetFileInformationByHandleExW(...)
@@ -297,6 +439,490 @@
         </member>
         <member name="M:C9Native.GetFileInformation.GetProcAddress(System.IntPtr,System.String)">
             *LPCSTR*/ string lpLibFileName
+        </member>
+        <member name="T:C9Native.FileInformationFileId">
+            <summary>
+            Retrieve the unique file ID for this file.
+            </summary>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.Status">
+            <summary>
+            Return the failure status if any or null if object creation succeeded.
+            </summary>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.IsOk">
+            <summary>
+            Returns true if the construction succeeded. If false then Status will return the failure information.
+            </summary>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.Path">
+            <summary>
+            Retrieve the path passed in on object creation.
+            </summary>
+        </member>
+        <member name="M:C9Native.FileInformationFileId.GetSerialNumber(System.Int32)">
+            <summary>
+            Return the two 32 bit pieces of the volume serial number part of the file id.
+            </summary>
+            <param name="index">Index 0 or 1 to the piece of the volume serial number that is of interest.</param>
+            <returns>32 bit piece of the volume serial number.</returns>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.FullSerialNumber">
+            <summary>
+            Retrieve a string form of the full 64 bit volume serial number.
+            </summary>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.VolumeSerialNumber">
+            <summary>
+            Retrieve the 32 bit volume serial number.
+            </summary>
+        </member>
+        <member name="M:C9Native.FileInformationFileId.GetFileIdentifier(System.Int32)">
+            <summary>
+            Retrieve the four 32 bit pieces of the file identifier.
+            </summary>
+            <param name="index">Index 0..3 of the piece of the file identifier of interest.</param>
+            <returns>32 bit piece of the file identifier.</returns>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.Identifier">
+            <summary>
+            Retrieve the file specific identifier. Needs to be combined with the volume serial number to be unique.
+            </summary>
+        </member>
+        <member name="P:C9Native.FileInformationFileId.FullIdentifier">
+            <summary>
+            Return the full string that identifies this file containing both volume information and file information.
+            </summary>
+        </member>
+        <member name="M:C9Native.FileInformationFileId.#ctor(System.String)">
+            <summary>
+            RAII CTOR Retrieve the pieces of the file identifier.
+            </summary>
+            <param name="path">Path to the file we're interested in.</param>
+        </member>
+        <member name="M:C9Native.FileInformationFileId.#ctor(C9Native.BaseFileHandle)">
+            <summary>
+            Get the unique file identifier for the file associated with the provided handle. This version uses a pre-opened handle.
+            </summary>
+            <param name="handle">Wrapper object around a native file handle.</param>
+        </member>
+        <member name="M:C9Native.FileInformationFileId.LoadValues(C9Native.BaseFileHandle)">
+            <summary>
+            Fill in the contents of this object. Factored out common code from the file path and native handle based versions.
+            </summary>
+            <param name="handle">Native handle in wrapper for the file to be examined.</param>
+        </member>
+        <member name="T:C9Native.ReadFileHandle">
+            <summary>
+            Wrapper with RAII constructor for opening a read only native file handle.
+            </summary>
+        </member>
+        <member name="M:C9Native.ReadFileHandle.#ctor(System.String)">
+            <summary>
+            RAII CTOR create and load this object with a native file handle that points to the specified path.
+            </summary>
+            <param name="path">Path to the file we want a native handle for.</param>
+        </member>
+        <member name="T:C9Native.Volume">
+            <summary>
+            Load all available volume information for the specified volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.Volume.VolumePath">
+            <summary>
+            Retrieve the volume path that was used to populate this object.
+            </summary>
+        </member>
+        <member name="P:C9Native.Volume.Names">
+            <summary>
+            Retrieve mount paths for this volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.Volume.Type">
+            <summary>
+            Retrieve the type information for this volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.Volume.Space">
+            <summary>
+            Retrieve space information for this volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.Volume.Information">
+            <summary>
+            Retrieve label serial number and related volume information.
+            </summary>
+        </member>
+        <member name="M:C9Native.Volume.#ctor(System.String)">
+            <summary>
+            Given a volume path, retrieve all available information related to that volume.
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:C9Native.VolumeInformation">
+            <summary>
+            RAII Retrieve Volume information for the specified volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.VolumePath">
+            <summary>
+            Retrieve the path that was used to retrieve this object's contents.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.Status">
+            <summary>
+            Retrieve any failure status from our construction or null if construction succeeded.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.IsOk">
+            <summary>
+            Return true if this object was created without an error.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.Label">
+            <summary>
+            Volume label as a string.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.VolumeSerialNumber">
+            <summary>
+            Retrieve the volume serial number as a 32 bit unsigned integer.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.VolumeSerial">
+            <summary>
+            Retrieve the volume serial number as a string.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.ComponentLength">
+            <summary>
+            Maximum path component length for this file system.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.Features">
+            <summary>
+            Feature flags relevant to this volume's file system.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeInformation.FileSystem">
+            <summary>
+            Name of the file system that this volume is formatted for.
+            </summary>
+        </member>
+        <member name="M:C9Native.VolumeInformation.#ctor(System.String)">
+            <summary>
+            RAII CTOR retrieves volume information for the volume that path points to.
+            </summary>
+            <param name="path">path to the volume we're interested in</param>
+        </member>
+        <member name="T:C9Native.VolumeInformation.FileSystemFeature">
+            <summary>
+            File system feature flags returned as part of information.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.CasePreservedNames">
+            <summary>
+            The file system preserves the case of file names when it places a name on disk.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.CaseSensitiveSearch">
+            <summary>
+            The file system supports case-sensitive file names.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.DaxVolume">
+            <summary>
+            The specified volume is a direct access (DAX) volume. This flag was introduced in Windows 10, version 1607.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.FileCompression">
+            <summary>
+            The file system supports file-based compression.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.NamedStreams">
+            <summary>
+            The file system supports named streams.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.PersistentACLS">
+            <summary>
+            The file system preserves and enforces access control lists (ACL).
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.ReadOnlyVolume">
+            <summary>
+            The specified volume is read-only.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SequentialWriteOnce">
+            <summary>
+            The volume supports a single sequential write.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsEncryption">
+            <summary>
+            The file system supports the Encrypted File System (EFS).
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsExtendedAttributes">
+            <summary>
+            The specified volume supports extended attributes. An extended attribute is a piece of
+            application-specific metadata that an application can associate with a file and is not part
+            of the file's data.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsHardLinks">
+            <summary>
+            The specified volume supports hard links. For more information, see Hard Links and Junctions.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsObjectIDs">
+            <summary>
+            The file system supports object identifiers.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsOpenByFileId">
+            <summary>
+            The file system supports open by FileID. For more information, see FILE_ID_BOTH_DIR_INFO.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsReparsePoints">
+            <summary>
+            The file system supports re-parse points.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsSparseFiles">
+            <summary>
+            The file system supports sparse files.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsTransactions">
+            <summary>
+            The volume supports transactions.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.SupportsUsnJournal">
+            <summary>
+            The specified volume supports update sequence number (USN) journals. For more information,
+            see Change Journal Records.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.UnicodeOnDisk">
+            <summary>
+            The file system supports Unicode in file names as they appear on disk.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.VolumeIsCompressed">
+            <summary>
+            The specified volume is a compressed volume, for example, a DoubleSpace volume.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeInformation.FileSystemFeature.VolumeQuotas">
+            <summary>
+            The file system supports disk quotas.
+            </summary>
+        </member>
+        <member name="T:C9Native.VolumePathNames">
+            <summary>
+            RAII Retrieve mounted paths for the provided volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumePathNames.VolumeName">
+            <summary>
+            The name of the volume we were asked to get mount paths for.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumePathNames.Item(System.Int32)">
+            <summary>
+            Retrieve one of the paths that this volume is mounted at.
+            </summary>
+            <param name="index">Index of the path to return</param>
+            <returns>the string that represents one of the mount paths for this volume</returns>
+        </member>
+        <member name="P:C9Native.VolumePathNames.Count">
+            <summary>
+            Property that provides the number of paths stored here.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumePathNames.Volume">
+            <summary>
+            Provide read only access to the name of the volume we grabbed the mount paths for.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumePathNames.IsOk">
+            <summary>
+            Return true if we got the information we were looking for.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumePathNames.Status">
+            <summary>
+            Return the completion status code for this retrieval.
+            </summary>
+        </member>
+        <member name="M:C9Native.VolumePathNames.#ctor(System.String)">
+            <summary>
+            Construct object loaded with the paths (zero or more) associated with this volume.
+            </summary>
+            <param name="volume">Volume path that we want mount paths for.</param>
+        </member>
+        <member name="T:C9Native.Volumes">
+            <summary>
+            RAII Get a list of _volumes and the available detailed volume information.
+            </summary>
+        </member>
+        <member name="P:C9Native.Volumes.Item(System.Int32)">
+            <summary>
+            Retrieve one of the volume names stored in this object.
+            </summary>
+            <param name="index">Index of the item being retrieved.</param>
+            <returns>Volume path name</returns>
+        </member>
+        <member name="P:C9Native.Volumes.Item(System.String)">
+            <summary>
+            Retrieve the volume information for one volume we know about.
+            </summary>
+            <param name="index">Volume path for the volume we're interested in</param>
+            <returns>Volume object containing the details.</returns>
+        </member>
+        <member name="M:C9Native.Volumes.#ctor">
+            <summary>
+            Load this object up with the current volume list information.
+            </summary>
+        </member>
+        <member name="T:C9Native.VolumeSpace">
+            <summary>
+            Given a volume path, RAII provide the capacity information for the volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.VolumePath">
+            <summary>
+            Retrieve the volume path that this object was created for.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.AvailableBytes">
+            <summary>
+            Return the number of bytes available to the current user.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.AvailableText">
+            <summary>
+            Human readable version of available space.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.TotalBytes">
+            <summary>
+            Return the total number of bytes that the volume can store.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.TotalText">
+            <summary>
+            Text representation of the total space on the volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.FreeBytes">
+            <summary>
+            Return the number of bytes of free space on the volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.FreeText">
+            <summary>
+            Text representation of the free space on the volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.Status">
+            <summary>
+            Retrieve any failure status code from the setup of this object.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeSpace.IsOk">
+            <summary>
+            Return true if the object was loaded successfully. A false result indicates error information is stored.
+            </summary>
+        </member>
+        <member name="M:C9Native.VolumeSpace.#ctor(System.String)">
+            <summary>
+            RAII Style create an object holding the free space information for this volume.
+            </summary>
+            <param name="path">Volume path for which the information is to be retrieved.</param>
+        </member>
+        <member name="T:C9Native.VolumeType">
+            <summary>
+            RAII method to access the volume type for a provided volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeType.TypeName">
+            <summary>
+            Human readable name for the type of this volume.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeType.VolumePath">
+            <summary>
+            Retrieve the volume path this was created for.
+            </summary>
+        </member>
+        <member name="P:C9Native.VolumeType.Type">
+            <summary>
+            Retrieve the type code for this volume. Numeric volume type.
+            </summary>
+        </member>
+        <member name="M:C9Native.VolumeType.#ctor(System.String)">
+            <summary>
+            RAII CTOR given a volume path this object provides the type of volume (if available)
+            </summary>
+            <param name="path">Volume path we're interested in</param>
+        </member>
+        <member name="T:C9Native.VolumeType.DriveType">
+            <summary>
+            Drive type enumeration.
+            </summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.Unknown">
+            <summary>The drive type cannot be determined.</summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.Error">
+            <summary>The root path is invalid, for example, no volume is mounted at the path.</summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.Removable">
+            <summary>The drive is a type that has removable media, for example, a floppy drive or removable hard disk.</summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.Fixed">
+            <summary>The drive is a type that cannot be removed, for example, a fixed hard drive.</summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.Remote">
+            <summary>The drive is a remote (network) drive.</summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.CDROM">
+            <summary>The drive is a CD-ROM drive.</summary>
+        </member>
+        <member name="F:C9Native.VolumeType.DriveType.RAMDisk">
+            <summary>The drive is a RAM disk.</summary>
+        </member>
+        <member name="T:C9Native.Win32ErrorCode">
+            <summary>
+            RAII win32 status code storage and translation object.
+            </summary>
+        </member>
+        <member name="P:C9Native.Win32ErrorCode.Code">
+            <summary>
+            Retrieve the stored win32 status code.
+            </summary>
+        </member>
+        <member name="P:C9Native.Win32ErrorCode.Message">
+            <summary>
+            Retrieve the human readable error message associated with this code.
+            </summary>
+        </member>
+        <member name="M:C9Native.Win32ErrorCode.#ctor(System.Int32)">
+            <summary>
+            Store a win32 status code and provide a human readable string if possible.
+            </summary>
+            <param name="code">Status code to be stored and translated</param>
+        </member>
+        <member name="M:C9Native.Win32ErrorCode.#ctor">
+            <summary>
+            Pull the marshaller stored win32 status code and provide translation
+            </summary>
         </member>
     </members>
 </doc>

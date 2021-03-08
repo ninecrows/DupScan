@@ -85,6 +85,35 @@ extern "C"
 	}
 
 	_declspec(dllexport)
+	BOOL GetVolumePathNamesForVolumeNameZX(
+		LPCWSTR lpszVolumeName,
+		LPWCH   lpszVolumePathNames,
+		DWORD   cchBufferLength,
+		PDWORD  lpcchReturnLength
+	)
+	{
+		memset(lpszVolumePathNames, 30, sizeof(wchar_t) * cchBufferLength);
+		
+		size_t index = 0;
+		for (size_t ct = 0; ct < 4; ct++)
+		{
+			lpszVolumePathNames[index++] = L'a' + ct;
+		}
+		lpszVolumePathNames[index++] = L'\0';
+
+		for (size_t ct = 0; ct < 4; ct++)
+		{
+			lpszVolumePathNames[index++] = L'q' + ct;
+		}		
+		lpszVolumePathNames[index++] = L'\0';
+		lpszVolumePathNames[index++] = L'\0';
+		
+		*lpcchReturnLength = index;
+		
+		return (TRUE);
+	}
+	
+	_declspec(dllexport)
 		DWORD GetFileInformation(const wchar_t* path,
 			BY_HANDLE_FILE_INFORMATION *results)
 	{

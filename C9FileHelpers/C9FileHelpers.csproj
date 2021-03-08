@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestNative\C9CsNativeHelpers.csproj" />
+    <ProjectReference Include="..\TestNative\C9Native.csproj" />
   </ItemGroup>
 
 </Project>

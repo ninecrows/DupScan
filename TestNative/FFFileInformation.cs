@@ -282,9 +282,10 @@ namespace C9Native
 
     public class GetFileInformation
     {
+        
         [DllImport("Kernel32.dll", EntryPoint = "GetVolumeInformationW", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetVolumeInformationW(
+        public static extern bool GetVolumeInformationW(
                 string rootPathName,
                 StringBuilder volumeNameBuffer,
                 int volumeNameSize,

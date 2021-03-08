@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\C9FileHelpers\C9FileHelpers.csproj" />
-    <ProjectReference Include="..\TestNative\C9CsNativeHelpers.csproj" />
+    <ProjectReference Include="..\TestNative\C9Native.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using C9DupScan;
+using C9FileHelpers;
+using C9Native;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
@@ -502,8 +505,13 @@ namespace DupScan
         static void Main(string[] args)
         {
             log.Add("Starting in \"" + Directory.GetCurrentDirectory() + "\"");
-            
 
+            var iid = new FileInformationFileId("h:\\index.json");
+
+            var hashes = new FileHashes("h:\\index.json");
+
+            // Full map of volumes on the system and their particulars.
+            C9Native.Volumes volumes = new C9Native.Volumes();
             //TestNative.GetFileInformation.CallMe("Foo.json");
 
             DisplayInfoCollection displays = GetDisplays();
@@ -579,9 +587,32 @@ namespace DupScan
                         // Store the file id if it isn't alraedy there.
                         if ((information.fileId == null) && File.Exists(information.path))
                         {
+                            var iii = new C9Native.FileInformationFileId(information.path);
+                            var hhh = new FileHashes(information.path);
+
                             var newStyle = new C9FileHelpers.FileInformation(information.path);
                             string jjj = JsonConvert.SerializeObject(newStyle, Formatting.Indented);
                             log.Add(jjj);
+
+                            if (newStyle.fullPath.Length >= 2 && newStyle.fullPath[1] == ':')
+                            {
+                                var driveLetter = newStyle.fullPath[0];
+                                string drivePath = driveLetter + ":\\";
+                                StringBuilder volumeName = new StringBuilder(1024);
+                                int nameSize = 1024;
+                                uint volumeSerialNumber = 0;
+                                uint maxLength = 1024;
+                                C9Native.FileSystemFeature feature = 0;
+                                StringBuilder FileSystemName = new StringBuilder(1024);
+                                int namesize = 1024;
+                                bool result = C9Native.GetFileInformation.GetVolumeInformationW(
+                                    drivePath, volumeName, nameSize,
+                                     out volumeSerialNumber,  out maxLength,
+                                    out feature,
+                                    FileSystemName,
+                                    namesize
+                                );
+                            }
 
                             String fileId = C9Native.GetFileInformation.GetFileIdentity(information.path);
                             information.fileId = fileId;

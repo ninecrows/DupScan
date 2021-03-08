@@ -18,15 +18,15 @@ namespace C9FileHelpers
 
             FileInfo information = new FileInfo(fileName);
 
-            created = new ExTimeStamp(information.CreationTime); //File.GetCreationTime(path);
-            //created8601 = created.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-            modified = new ExTimeStamp(information.LastWriteTime); //information.LastWriteTime; //File.GetLastWriteTime(path);
-            // modified8601 = modified.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+            created = new ExTimeStamp(information.CreationTime); 
+            
+            modified = new ExTimeStamp(information.LastWriteTime);
+            
             size = information.Length;
 
             directory = information.DirectoryName;
             fullPath = information.FullName;
-            String fileId = "";  //C9Native.GetFileInformation.GetFileIdentity(fileName);
+            String fileId = C9Native.GetFileInformation.GetFileIdentity(fileName); 
         }
 
         public string path;
@@ -35,6 +35,7 @@ namespace C9FileHelpers
         public long size;
 
         public /*DateTime*/ ExTimeStamp created;
+
         //public string created8601;
         public /*DateTime*/ ExTimeStamp modified;
         //public string modified8601;
@@ -50,8 +51,7 @@ namespace C9FileHelpers
         [OptionalField] public string driveLetter;
 
 
-        [OptionalField]
-        public string fileId;
+        [OptionalField] public string fileId;
 
         /// <summary>
         /// Hashed data stored for this file.
@@ -72,7 +72,7 @@ namespace C9FileHelpers
         /// Timestamp when this file was most recently recorded.
         /// </summary>
         [OptionalField] public DateTime lastSeen;
-        
+
         /// <summary>
         /// The label string for the drive on which this file was most recently seen.
         /// </summary>

@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C9DupScan", "DupScan\C9DupS
 		{C8A6823D-F716-4C00-9A33-CC0D42D00E6E} = {C8A6823D-F716-4C00-9A33-CC0D42D00E6E}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C9CsNativeHelpers", "TestNative\C9CsNativeHelpers.csproj", "{C8A6823D-F716-4C00-9A33-CC0D42D00E6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C9Native", "TestNative\C9Native.csproj", "{C8A6823D-F716-4C00-9A33-CC0D42D00E6E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A8B0760C-7807-4709-9B08-162DB0A2AC0E} = {A8B0760C-7807-4709-9B08-162DB0A2AC0E}
 	EndProjectSection
@@ -20,6 +20,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C9FIleWatcher", "C9FIleWatcher\C9FIleWatcher.csproj", "{C17259EC-C8A1-43E9-8FAC-7957ADE4617D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C9FileHelpers", "C9FileHelpers\C9FileHelpers.csproj", "{F54446A8-E45E-4ECB-95FA-9FE02D24185D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGetVolumeInformation", "TestGetVolumeInformation\TestGetVolumeInformation.vcxproj", "{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestFileIdentifier", "TestFileIdentifier\TestFileIdentifier.vcxproj", "{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +105,26 @@ Global
 		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x64.Build.0 = Release|Any CPU
 		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x86.ActiveCfg = Release|Any CPU
 		{F54446A8-E45E-4ECB-95FA-9FE02D24185D}.Release|x86.Build.0 = Release|Any CPU
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Debug|x64.ActiveCfg = Debug|x64
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Debug|x64.Build.0 = Debug|x64
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Debug|x86.ActiveCfg = Debug|Win32
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Debug|x86.Build.0 = Debug|Win32
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Release|x64.ActiveCfg = Release|x64
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Release|x64.Build.0 = Release|x64
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Release|x86.ActiveCfg = Release|Win32
+		{CAB2FC11-80B5-4381-8B59-A6C0C877FED4}.Release|x86.Build.0 = Release|Win32
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Debug|x64.ActiveCfg = Debug|x64
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Debug|x64.Build.0 = Debug|x64
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Debug|x86.ActiveCfg = Debug|Win32
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Debug|x86.Build.0 = Debug|Win32
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Release|Any CPU.ActiveCfg = Release|Win32
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Release|x64.ActiveCfg = Release|x64
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Release|x64.Build.0 = Release|x64
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Release|x86.ActiveCfg = Release|Win32
+		{17CCB4EC-6A8E-434C-88CC-44A358BBD6BC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
