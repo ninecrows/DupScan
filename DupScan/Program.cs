@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
 using System.IO.Enumeration;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.Serialization.Json;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using C9DupScan;
 using C9FileHelpers;
 using C9Native;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace DupScan
 {
@@ -227,6 +232,7 @@ namespace DupScan
 
     class Program
     {
+#if false
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern /*BOOL*/ bool GetVolumeInformationW(
 /*LPCWSTR*/ String lpRootPathName,
@@ -240,6 +246,9 @@ namespace DupScan
         );
 
         [Flags]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
         public enum FileSystemFeature : uint
         {
             /// <summary>
@@ -345,7 +354,7 @@ namespace DupScan
             /// </summary>
             VolumeQuotas = 0x20
         }
-
+#endif
         delegate bool MonitorEnumDelegate(IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData);
 
         [DllImport("user32.dll")]
@@ -510,24 +519,43 @@ namespace DupScan
 
             var hashes = new FileHashes("h:\\index.json");
 
+            string wherzzze = Directory.GetCurrentDirectory();
+            FindFiles filesOfInterestHerezzz = new FindFiles(wherzzze);
+
+            string ss = JsonConvert.SerializeObject(hashes, Formatting.Indented);
+            log.Add(ss);
+            var hffhh = JsonConvert.DeserializeObject<FileHashes>(ss);
+
+            byte[] bsonData;
+            {
+                var ms = new MemoryStream();
+
+                using var writer = new Newtonsoft.Json.Bson.BsonWriter(ms);
+
+                //writer.WriteRaw(ss);
+                var ser = new JsonSerializer();
+                ser.Serialize(writer, hashes);
+                bsonData = ms.ToArray();
+            }
+
             // Full map of volumes on the system and their particulars.
-            C9Native.Volumes volumes = new C9Native.Volumes();
+            Volumes volumes = new Volumes();
             //TestNative.GetFileInformation.CallMe("Foo.json");
 
-            DisplayInfoCollection displays = GetDisplays();
+            var displays = GetDisplays();
 
-            List<string> filesOfInterest = new List<string>();
+            var filesOfInterest = new List<string>();
 
-            Dictionary<String, List<FileInformation>> oldFiles = new Dictionary<String, List<FileInformation>>();
-            Dictionary<String, FileInformation> nameToFileInformation = new Dictionary<String, FileInformation>();
-            Dictionary<String, FileInformation> idToFIleInformation = new Dictionary<String, FileInformation>();
-            Dictionary<String, String> nameToHash = new Dictionary<String, String>();
+            var oldFiles = new Dictionary<string, List<FileInformation>>();
+            var nameToFileInformation = new Dictionary<string, FileInformation>();
+            var idToFIleInformation = new Dictionary<string, FileInformation>();
+            var nameToHash = new Dictionary<string, string>();
 
             MongoClient client = null;
             IMongoDatabase database = null;
             try
             {
-                client = new MongoClient("mongodb://walrus:27017");
+                client = new MongoClient("mongodb://localhost:27017");
                 database = client.GetDatabase("EBooks");
             }
             catch (Exception ex)
@@ -536,6 +564,16 @@ namespace DupScan
                 //throw;
             }
 
+            // Test storing hashes into this DB.
+            {
+                var testCollection = database.GetCollection<BsonDocument>("Test");
+                var document = new BsonDocument();
+                var ddd = BsonDocument.Parse(ss);
+                testCollection.InsertOne(ddd);
+
+                var c2 = database.GetCollection<FileHashes>("HashTest");
+                c2.InsertOne(hashes);
+            }
 
             IMongoCollection<MongoDB.Bson.BsonDocument> fileslist = null;
             if (database != null)
@@ -627,6 +665,7 @@ namespace DupScan
             }
 
             string where = Directory.GetCurrentDirectory();
+            FindFiles filesOfInterestHere = new FindFiles(where);
 
             string target = ".";
             string alt = null;

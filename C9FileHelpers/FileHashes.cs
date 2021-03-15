@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Force.Crc32;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
-using Force.Crc32;
-using MongoDB.Bson.Serialization.IdGenerators;
-//using Crc32CAlgorithm = Crc32C.Crc32CAlgorithm;
 
 namespace C9FileHelpers
 {
@@ -15,6 +12,7 @@ namespace C9FileHelpers
     public class FileHashes
     {
         public string fileHashSha256;
+        public string FileHashSha256 { get; }
 
         [OptionalField] public string fileHashSha512;
 
@@ -28,7 +26,6 @@ namespace C9FileHelpers
 
         public FileHashes()
         {
-
         }
 
         public FileHashes(string fileName)
@@ -73,13 +70,9 @@ namespace C9FileHelpers
                 fileHashSha1 = valueBase64;
             }
 
-            using (MD5 myMD5 = MD5.Create())
+            using (HashAlgorithm myMD5 = MD5.Create())
             {
-                byte[] value = myMD5.ComputeHash(buffer);
-
-                string valueBase64 = Convert.ToBase64String(value);
-
-                fileHashMd5 = valueBase64;
+                fileHashMd5 = ComputeHash(myMD5, buffer);
             }
 
             var result = Crc32CAlgorithm.Compute(buffer);
@@ -87,6 +80,15 @@ namespace C9FileHelpers
             var trad = Crc32Algorithm.Compute(buffer);
 
             var segments = new BufferSegments(buffer, 64);
+        }
+
+        private static string ComputeHash(HashAlgorithm algorithm, byte[] buffer)
+        {
+            byte[] value = algorithm.ComputeHash(buffer);
+
+            string base64 = Convert.ToBase64String(value);
+
+            return base64;
         }
     }
 
