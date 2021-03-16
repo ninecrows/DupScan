@@ -1,24 +1,19 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace C9Native
 {
-    // Handle PInvoke for this function
-    /*
-     BOOL 
-     GetFileInformationByHandleExW(
-        HANDLE hFile,
-        FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
-        LPVOID lpFileInformation,
-        DWORD dwBufferSize
-        );
-     */
-
     /// <summary>
     /// Mode select enumeration for GetFileInformationByHandleExW(...)
     /// </summary>
-    enum FILE_INFO_BY_HANDLE_CLASS
+     [SuppressMessage("ReSharper", "UnusedMember.Global")]
+     [SuppressMessage("ReSharper", "CommentTypo")]
+     [SuppressMessage("ReSharper", "IdentifierTypo")]
+    // ReSharper disable once ArrangeTypeModifiers
+    // ReSharper disable once InconsistentNaming
+    internal enum FILE_INFO_BY_HANDLE_CLASS
     {
         /// <summary>
         /// Select FILE_BASIC_INFO return
@@ -141,7 +136,13 @@ namespace C9Native
         MaximumFileInfoByHandleClass
     };
 
+    /// <summary>
+    /// List of file system features needed externally for the moment.
+    /// </summary>
     [Flags]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum FileSystemFeature : uint
     {
         /// <summary>
@@ -247,42 +248,47 @@ namespace C9Native
         /// </summary>
         VolumeQuotas = 0x20
     }
-
-
-
+    
     /// <summary>
     /// Output data layout for GetFileInformationByHandleExW(...) with 
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    struct FILE_ID_128
+    // ReSharper disable once InconsistentNaming
+    // ReSharper disable once UnusedMember.Global
+    internal struct FILE_ID_128
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] Identifier;
     }
 
-    struct FILE_ID_INFO
+    // ReSharper disable once InconsistentNaming
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    internal struct FILE_ID_INFO
     {
+        // ReSharper disable once InconsistentNaming
         public UInt64 VolumeSerialNumber;
 
         public byte[] FileId;
-        //        public FILE_ID_128 FileId;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-
-    struct FileIdInfo
-    {
-        public UInt64 VolumeSerialNumber;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public byte[] FileId;
-    }
-
-    //private struct 
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class GetFileInformation
     {
-        
+        /// <summary>
+        /// Used by the main scan program to grab information directly. Should be fixed.
+        /// </summary>
+        /// <param name="rootPathName">root name</param>
+        /// <param name="volumeNameBuffer">volume name</param>
+        /// <param name="volumeNameSize">size of buffer</param>
+        /// <param name="volumeSerialNumber">vsn</param>
+        /// <param name="maximumComponentLength">component length</param>
+        /// <param name="fileSystemFlags">flags</param>
+        /// <param name="fileSystemNameBuffer">name here</param>
+        /// <param name="nFileSystemNameSize">size of name</param>
+        /// <returns></returns>
         [DllImport("Kernel32.dll", EntryPoint = "GetVolumeInformationW", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetVolumeInformationW(
@@ -296,89 +302,46 @@ namespace C9Native
                 int nFileSystemNameSize
             );
 
-        [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleEx", SetLastError = true)]
-        static extern 
-            /*BOOL*/ bool GetFileInformationByHandleExW(
-            /*HANDLE*/ IntPtr hFile,
-            FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
-
-            ///*LPVOID*/ IntPtr lpFileInformation,
-            ref FILE_ID_INFO result,
-
-            /*DWORD*/ UInt32 dwBufferSize
-            );
-
-        [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleExW", SetLastError = true)]
-        static extern /*BOOL*/ bool GetRawFileInformationByHandleExW(
-                                                /*HANDLE*/ IntPtr hFile,
-                                                FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
-                                                ///*LPVOID*/ IntPtr lpFileInformation,
-                                                IntPtr result,
-                                                /*DWORD*/ UInt32 dwBufferSize
-            );
-
-        //[DllImport("kernel32.dll", SetLastError = true)]
-        //private static extern bool GetFileInformationByHandleEx(IntPtr hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_ID_BOTH_DIR_INFO dirInfo, uint dwBufferSize);
 
         [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandle", SetLastError = true)]
         static extern
-        /*BOOL*/ Boolean GetFileInformationByHandle(
-                                                /*HANDLE*/ IntPtr hFile,
+     Boolean GetFileInformationByHandle(
+                                              IntPtr hFile,
                                                 out BY_HANDLE_FILE_INFORMATION lpFileInformation
                                                     );
 
         [StructLayout(LayoutKind.Sequential)]
-        struct MyData
+        // ReSharper disable once InconsistentNaming
+        private readonly struct BY_HANDLE_FILE_INFORMATION
         {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-            public byte[] FileId;
-            public UInt64 VolumeId;
-        };
+            public readonly uint dwFileAttributes;
 
-        [DllImport("TestTarget.dll", EntryPoint = "RunThis")]
-        static extern int RunThis(string path, MyData data);
+            public readonly System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
+            public readonly System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
+            public readonly System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
 
-        [DllImport("TestTarget.dll", EntryPoint = "FakeFileId")]
-        static extern int FakeFileId(string path, ref MyData data);
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct BY_HANDLE_FILE_INFORMATION
-        {
-            /*DWORD*/
-            public UInt32 dwFileAttributes;
-            //System.DateTime /*FILETIME*/ ftCreationTime;
-            //System.DateTime /*FILETIME*/  ftLastAccessTime;
-            //System.DateTime /*FILETIME*/  ftLastWriteTime;
-
-            public System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
-            public System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
-            public System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
-
-            /*DWORD*/
-            public UInt32 dwVolumeSerialNumber;
-            /*DWORD*/
-            public UInt32 nFileSizeHigh;
-            /*DWORD*/
-            public UInt32 nFileSizeLow;
-            /*DWORD*/
-            public UInt32 nNumberOfLinks;
-            /*DWORD*/
-            public UInt32 nFileIndexHigh;
-            /*DWORD*/
-            public UInt32 nFileIndexLow;
+            public readonly uint dwVolumeSerialNumber;
+            public readonly uint nFileSizeHigh;
+            public readonly uint nFileSizeLow;
+            public readonly uint nNumberOfLinks;
+            public readonly uint nFileIndexHigh;
+            public readonly uint nFileIndexLow;
         }
-
-        //[DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandle")]
-        //static extern bool GetFileInformationByHandle(IntPtr /*HANDLE*/ handle,
-        //   ref BY_HANDLE_FILE_INFORMATION information);
-
+        
+        /// <summary>
+        /// Flags needed externally
+        /// </summary>
         [Flags]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
         public enum EFileAccess : uint
         {
             //
-            // Standart Section
+            // Standard Section
             //
 
+#pragma warning disable 1591
             AccessSystemSecurity = 0x1000000,   // AccessSystemAcl access type
             MaximumAllowed = 0x2000000,     // MaximumAllowed access type
 
@@ -407,24 +370,50 @@ namespace C9Native
             FILE_EXECUTE = 0x0020,          // file
             FILE_TRAVERSE = 0x0020,         // directory
             FILE_DELETE_CHILD = 0x0040,     // directory
+#pragma warning disable 1591
             FILE_READ_ATTRIBUTES = 0x0080,      // all
+#pragma warning restore 1591
+#pragma warning disable 1591
             FILE_WRITE_ATTRIBUTES = 0x0100,     // all
+#pragma warning restore 1591
 
             //
             // Generic Section
             //
 
+            /// <summary>
+            /// 
+            /// </summary>
             GenericRead = 0x80000000,
+            /// <summary>
+            /// 
+            /// </summary>
             GenericWrite = 0x40000000,
+            /// <summary>
+            /// 
+            /// </summary>
             GenericExecute = 0x20000000,
+            /// <summary>
+            /// 
+            /// </summary>
             GenericAll = 0x10000000,
 
+            /// <summary>
+            /// 
+            /// </summary>
             SPECIFIC_RIGHTS_ALL = 0x00FFFF,
+
+            /// <summary>
+            /// 
+            /// </summary>
             FILE_ALL_ACCESS =
             StandardRightsRequired |
             Synchronize |
             0x1FF,
 
+            /// <summary>
+            /// 
+            /// </summary>
             FILE_GENERIC_READ =
             StandardRightsRead |
             FILE_READ_DATA |
@@ -432,6 +421,9 @@ namespace C9Native
             FILE_READ_EA |
             Synchronize,
 
+            /// <summary>
+            /// 
+            /// </summary>
             FILE_GENERIC_WRITE =
             StandardRightsWrite |
             FILE_WRITE_DATA |
@@ -440,13 +432,20 @@ namespace C9Native
             FILE_APPEND_DATA |
             Synchronize,
 
+            /// <summary>
+            /// 
+            /// </summary>
             FILE_GENERIC_EXECUTE =
             StandardRightsExecute |
               FILE_READ_ATTRIBUTES |
               FILE_EXECUTE |
               Synchronize
+#pragma warning restore 1591
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [Flags]
         public enum EFileShare : uint
         {
@@ -474,6 +473,10 @@ namespace C9Native
             Delete = 0x00000004
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public enum ECreationDisposition : uint
         {
             /// <summary>
@@ -502,36 +505,117 @@ namespace C9Native
             TruncateExisting = 5
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [Flags]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public enum EFileAttributes : uint
         {
+#pragma warning disable 1591
             Readonly = 0x00000001,
             Hidden = 0x00000002,
-            System = 0x00000004,
+           System = 0x00000004,
             Directory = 0x00000010,
+            /// <summary>
+            /// 
+            /// </summary>
             Archive = 0x00000020,
+            /// <summary>
+            /// 
+            /// </summary>
             Device = 0x00000040,
+            /// <summary>
+            /// 
+            /// </summary>
             Normal = 0x00000080,
+            /// <summary>
+            /// 
+            /// </summary>
             Temporary = 0x00000100,
+            /// <summary>
+            /// 
+            /// </summary>
             SparseFile = 0x00000200,
+            /// <summary>
+            /// 
+            /// </summary>
             ReparsePoint = 0x00000400,
+            /// <summary>
+            /// 
+            /// </summary>
             Compressed = 0x00000800,
+            /// <summary>
+            /// 
+            /// </summary>
             Offline = 0x00001000,
+            /// <summary>
+            /// 
+            /// </summary>
             NotContentIndexed = 0x00002000,
+            /// <summary>
+            /// 
+            /// </summary>
             Encrypted = 0x00004000,
+            /// <summary>
+            /// 
+            /// </summary>
             Write_Through = 0x80000000,
+            /// <summary>
+            /// 
+            /// </summary>
             Overlapped = 0x40000000,
+            /// <summary>
+            /// 
+            /// </summary>
             NoBuffering = 0x20000000,
+            /// <summary>
+            /// 
+            /// </summary>
             RandomAccess = 0x10000000,
+            /// <summary>
+            /// 
+            /// </summary>
             SequentialScan = 0x08000000,
+            /// <summary>
+            /// 
+            /// </summary>
             DeleteOnClose = 0x04000000,
+            /// <summary>
+            /// 
+            /// </summary>
             BackupSemantics = 0x02000000,
+            /// <summary>
+            /// 
+            /// </summary>
             PosixSemantics = 0x01000000,
+            /// <summary>
+            /// 
+            /// </summary>
             OpenReparsePoint = 0x00200000,
+            /// <summary>
+            /// 
+            /// </summary>
             OpenNoRecall = 0x00100000,
+            /// <summary>
+            /// 
+            /// </summary>
             FirstPipeInstance = 0x00080000
+#pragma warning restore 1591
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="access"></param>
+        /// <param name="share"></param>
+        /// <param name="securityAttributes"></param>
+        /// <param name="creationDisposition"></param>
+        /// <param name="flagsAndAttributes"></param>
+        /// <param name="templateFile"></param>
+        /// <returns></returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr CreateFileW(
                             [MarshalAs(UnmanagedType.LPWStr)] string filename,
@@ -543,48 +627,35 @@ namespace C9Native
                             IntPtr templateFile
             );
 
-        //   [DllImport("kernel32.dll", EntryPoint = "CreateFileW")]
-        //   static extern IntPtr /*HANDLE*/ CreateFileW(
-        ///*LPCWSTR*/ string lpFileName,
-        // /*DWORD*/ UInt32 dwDesiredAccess,
-        // /*DWORD*/ UInt32 dwShareMode,
-        // /*LPSECURITY_ATTRIBUTES*/ IntPtr lpSecurityAttributes,
-        ///*DWORD*/ UInt32 dwCreationDisposition,
-        // /*DWORD*/ UInt32 dwFlagsAndAttributes,
-        // /*HANDLE*/ IntPtr hTemplateFile);
-
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)] string lpFileName);
+        // ReSharper disable once UnusedMember.Local
+        private static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)] string lpFileName);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool CloseHandle(IntPtr hHandle);
-
-        //[DllImport("kernel32.dll", EntryPoint="LoadLibraryW")]
-        //extern static /*HMODULE*/ IntPtr LoadLibraryW(
-        ///*LPCSTR*/ string lpLibFileName
-        //);
+        private static extern bool CloseHandle(IntPtr hHandle);
 
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
-        static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-
-        //  [DllImport("kernel32.dll", EntryPoint ="GetProcAddress")]
-        //  extern static /*FARPROC*/ IntPtr GetProcAddress(
-        // /*HMODULE*/ IntPtr hModule,
-        // /*LPCSTR*/ string lpProcName
-        //);
+        // ReSharper disable once UnusedMember.Local
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
 
         [DllImport("kernel23.dll", EntryPoint = "FreeLibrary", SetLastError = true)]
-        extern static /*BOOL*/ bool FreeLibrary(
-        /*HMODULE*/ IntPtr hLibModule
-       );
+        // ReSharper disable once UnusedMember.Local
+        private static extern bool FreeLibrary(IntPtr hLibModule);
 
-        static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+        // ReSharper disable once ArrangeTypeMemberModifiers
+        // ReSharper disable once InconsistentNaming
+        private static readonly IntPtr INVALID_HANDLE_VALUE = new(-1);
 
-        public static String GetFileIdentity(String path)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetFileIdentity(string path)
         {
             string result = null;
 
-            IntPtr handle = INVALID_HANDLE_VALUE;
+            var handle = INVALID_HANDLE_VALUE;
             try
             {
                 handle = CreateFileW(path,
@@ -598,14 +669,10 @@ namespace C9Native
                 // We obtained a handle, now time to use it.
                 if (handle != INVALID_HANDLE_VALUE)
                 {
-                    BY_HANDLE_FILE_INFORMATION information = new BY_HANDLE_FILE_INFORMATION();
+                    GetFileInformationByHandle(handle, out var information);
 
-                    bool ok = GetFileInformationByHandle(handle, out information);
-
-                    result = string.Format("{0:X4}-{1:x4}:{2:X8}.{3:X8}",
-                        information.dwVolumeSerialNumber >> 16, information.dwVolumeSerialNumber & 0xffff,
-                        information.nFileIndexHigh, information.nFileIndexLow);
-                    //result = information.dwVolumeSerialNumber + ":" + information.nFileIndexHigh + "." + information.nFileIndexLow;
+                    result =
+                        $"{information.dwVolumeSerialNumber >> 16:X4}-{information.dwVolumeSerialNumber & 0xffff:x4}:{information.nFileIndexHigh:X8}.{information.nFileIndexLow:X8}";
                 }
             }
             finally
@@ -617,36 +684,6 @@ namespace C9Native
             }
 
             return result;
-        }
-
-        public static void CallMe(string path)
-        {
-            IntPtr library = LoadLibraryW("TestTarget.dll");
-            if (library != null)
-            {
-                bool ok = FreeLibrary(library);
-                if (!ok)
-                {
-                    int errorCode = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
-                }
-            }
-
-            MyData data = new MyData();
-
-            int status = FakeFileId("AbcDef", ref data);
-
-            int value = RunThis("c:\\Temp\\Foo.json", data);
-
-            System.IO.FileStream stream = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            var handle = stream.SafeFileHandle;
-
-            // Make an object to receive this data.
-            FILE_ID_INFO myInfo = new FILE_ID_INFO();
-
-            bool result = GetFileInformationByHandleExW(handle.DangerousGetHandle(),
-              FILE_INFO_BY_HANDLE_CLASS.FileIdInfo,
-              ref myInfo,
-              24);
         }
     }
 }

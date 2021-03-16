@@ -146,6 +146,144 @@
             Flags controlling access
             </summary>
         </member>
+        <member name="T:C9Native.DisplayMonitor">
+            <summary>
+            Store the information we know about a single display.
+            </summary>
+        </member>
+        <member name="M:C9Native.DisplayMonitor.#ctor(System.IntPtr,C9Native.DisplayRectangle,C9Native.DisplayRectangle,System.Boolean,System.String)">
+            <summary>
+            Construct an object to store the information related to a display.
+            </summary>
+            <param name="handle"></param>
+            <param name="aRectangle"></param>
+            <param name="aWorkArea"></param>
+            <param name="aPrimary"></param>
+            <param name="aName"></param>
+        </member>
+        <member name="P:C9Native.DisplayMonitor.MonitorHandle">
+            <summary>
+            Handle to the native monitor object.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayMonitor.Display">
+            <summary>
+            Retrieve the boundaries of this monitor.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayMonitor.Working">
+            <summary>
+            Working area of the display.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayMonitor.Primary">
+            <summary>
+            If true then this is the primary display.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayMonitor.Name">
+            <summary>
+            Name of the monitor.
+            </summary>
+        </member>
+        <member name="T:C9Native.DisplayMonitors">
+            <summary>
+            RAII get information on all display monitors that this system knows about.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayMonitors.Item(System.Int32)">
+            <summary>
+            Retrieve the information about one of the monitors we know about.
+            </summary>
+            <param name="index">Which item do we want information on.</param>
+            <returns>Immutable block of information on this monitor.</returns>
+        </member>
+        <member name="P:C9Native.DisplayMonitors.Count">
+            <summary>
+            Return the number of monitors that we have information on.
+            </summary>
+        </member>
+        <member name="M:C9Native.DisplayMonitors.#ctor">
+            <summary>
+            RAII enumerate available monitors on this system and make their information available. 
+            </summary>
+        </member>
+        <member name="T:C9Native.DisplayMonitors.MonitorInfoEx">
+            <summary>
+            The MONITORINFOEX structure contains information about a display monitor.
+            The GetMonitorInfo function stores information into a MONITORINFOEX structure or a MONITORINFO structure.
+            The MONITORINFOEX structure is a superset of the MONITORINFO structure. The MONITORINFOEX structure adds a string member to contain a name 
+            for the display monitor.
+            </summary>
+        </member>
+        <member name="F:C9Native.DisplayMonitors.MonitorInfoEx.Size">
+            <summary>
+            The size, in bytes, of the structure. Set this member to sizeof(MONITORINFOEX) (72) before calling the GetMonitorInfo function. 
+            Doing so lets the function determine the type of structure you are passing to it.
+            </summary>
+        </member>
+        <member name="F:C9Native.DisplayMonitors.MonitorInfoEx.Monitor">
+            <summary>
+            A RECT structure that specifies the display monitor rectangle, expressed in virtual-screen coordinates. 
+            Note that if the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values.
+            </summary>
+        </member>
+        <member name="F:C9Native.DisplayMonitors.MonitorInfoEx.Work">
+            <summary>
+            A RECT structure that specifies the work area rectangle of the display monitor that can be used by applications, 
+            expressed in virtual-screen coordinates. Windows uses this rectangle to maximize an application on the monitor. 
+            The rest of the area in rcMonitor contains system windows such as the task bar and side bars. 
+            Note that if the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values.
+            </summary>
+        </member>
+        <member name="F:C9Native.DisplayMonitors.MonitorInfoEx.Flags">
+            <summary>
+            The attributes of the display monitor.
+            
+            This member can be the following value:
+              1 : MONITORINFOF_PRIMARY
+            </summary>
+        </member>
+        <member name="F:C9Native.DisplayMonitors.MonitorInfoEx.DeviceName">
+            <summary>
+            A string that specifies the device name of the monitor being used. Most applications have no use for a display monitor name, 
+            and so can save some bytes by using a MONITORINFO structure.
+            </summary>
+        </member>
+        <member name="T:C9Native.DisplayRectangle">
+            <summary>
+            Holds the boundaries of a screen rectangle.
+            </summary>
+        </member>
+        <member name="M:C9Native.DisplayRectangle.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Construct a new immutable rectangle object.
+            </summary>
+            <param name="aLeft">Left hand side.</param>
+            <param name="aTop">Top position.</param>
+            <param name="aRight">Right hand side.</param>
+            <param name="aBottom">Bottom position.</param>
+        </member>
+        <member name="P:C9Native.DisplayRectangle.Left">
+            <summary>
+            Left hand side of this rectangle.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayRectangle.Top">
+            <summary>
+            Top of this rectangle.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayRectangle.Right">
+            <summary>
+            Right side of this rectangle.
+            </summary>
+        </member>
+        <member name="P:C9Native.DisplayRectangle.Bottom">
+            <summary>
+            Bottom of this rectangle.
+            </summary>
+        </member>
         <member name="T:C9Native.FILE_INFO_BY_HANDLE_CLASS">
             <summary>
             Mode select enumeration for GetFileInformationByHandleExW(...)
@@ -271,6 +409,11 @@
             End of this enumeration
             </summary>
         </member>
+        <member name="T:C9Native.FileSystemFeature">
+            <summary>
+            List of file system features needed externally for the moment.
+            </summary>
+        </member>
         <member name="F:C9Native.FileSystemFeature.CasePreservedNames">
             <summary>
             The file system preserves the case of file names when it places a name on disk.
@@ -379,6 +522,80 @@
             Output data layout for GetFileInformationByHandleExW(...) with 
             </summary>
         </member>
+        <member name="T:C9Native.GetFileInformation">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:C9Native.GetFileInformation.GetVolumeInformationW(System.String,System.Text.StringBuilder,System.Int32,System.UInt32@,System.UInt32@,C9Native.FileSystemFeature@,System.Text.StringBuilder,System.Int32)">
+            <summary>
+            Used by the main scan program to grab information directly. Should be fixed.
+            </summary>
+            <param name="rootPathName">root name</param>
+            <param name="volumeNameBuffer">volume name</param>
+            <param name="volumeNameSize">size of buffer</param>
+            <param name="volumeSerialNumber">vsn</param>
+            <param name="maximumComponentLength">component length</param>
+            <param name="fileSystemFlags">flags</param>
+            <param name="fileSystemNameBuffer">name here</param>
+            <param name="nFileSystemNameSize">size of name</param>
+            <returns></returns>
+        </member>
+        <member name="T:C9Native.GetFileInformation.EFileAccess">
+            <summary>
+            Flags needed externally
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.GenericRead">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.GenericWrite">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.GenericExecute">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.GenericAll">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.SPECIFIC_RIGHTS_ALL">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.FILE_ALL_ACCESS">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.FILE_GENERIC_READ">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.FILE_GENERIC_WRITE">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAccess.FILE_GENERIC_EXECUTE">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:C9Native.GetFileInformation.EFileShare">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="F:C9Native.GetFileInformation.EFileShare.None">
             <summary>
             
@@ -403,6 +620,11 @@
             Enables subsequent open operations on an object to request delete access. 
             Otherwise, other processes cannot open the object if they request delete access.
             If this flag is not specified, but the object has been opened for delete access, the function fails.
+            </summary>
+        </member>
+        <member name="T:C9Native.GetFileInformation.ECreationDisposition">
+            <summary>
+            
             </summary>
         </member>
         <member name="F:C9Native.GetFileInformation.ECreationDisposition.New">
@@ -434,11 +656,135 @@
             The calling process must open the file with the GENERIC_WRITE access right. 
             </summary>
         </member>
-        <member name="M:C9Native.GetFileInformation.LoadLibraryW(System.String)">
-            *DWORD*/ UInt32 dwCreationDisposition,
+        <member name="T:C9Native.GetFileInformation.EFileAttributes">
+            <summary>
+            
+            </summary>
         </member>
-        <member name="M:C9Native.GetFileInformation.GetProcAddress(System.IntPtr,System.String)">
-            *LPCSTR*/ string lpLibFileName
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Archive">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Device">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Normal">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Temporary">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.SparseFile">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.ReparsePoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Compressed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Offline">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.NotContentIndexed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Encrypted">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Write_Through">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.Overlapped">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.NoBuffering">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.RandomAccess">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.SequentialScan">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.DeleteOnClose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.BackupSemantics">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.PosixSemantics">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.OpenReparsePoint">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.OpenNoRecall">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:C9Native.GetFileInformation.EFileAttributes.FirstPipeInstance">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:C9Native.GetFileInformation.CreateFileW(System.String,C9Native.GetFileInformation.EFileAccess,C9Native.GetFileInformation.EFileShare,System.IntPtr,C9Native.GetFileInformation.ECreationDisposition,C9Native.GetFileInformation.EFileAttributes,System.IntPtr)">
+            <summary>
+            
+            </summary>
+            <param name="filename"></param>
+            <param name="access"></param>
+            <param name="share"></param>
+            <param name="securityAttributes"></param>
+            <param name="creationDisposition"></param>
+            <param name="flagsAndAttributes"></param>
+            <param name="templateFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C9Native.GetFileInformation.GetFileIdentity(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
         </member>
         <member name="T:C9Native.FileInformationFileId">
             <summary>
