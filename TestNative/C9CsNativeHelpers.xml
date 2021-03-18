@@ -1124,6 +1124,11 @@
             <param name="index">Index of the item being retrieved.</param>
             <returns>Volume path name</returns>
         </member>
+        <member name="P:C9Native.Volumes.Count">
+            <summary>
+            Number of items in the base volume list.
+            </summary>
+        </member>
         <member name="P:C9Native.Volumes.Item(System.String)">
             <summary>
             Retrieve the volume information for one volume we know about.
@@ -1131,10 +1136,47 @@
             <param name="index">Volume path for the volume we're interested in</param>
             <returns>Volume object containing the details.</returns>
         </member>
+        <member name="M:C9Native.Volumes.BySerial(System.String)">
+            <summary>
+            Get a list of all volumes with this serial number.
+            </summary>
+            <param name="aSerialNumber">String form of the volume serial number we're looking for.</param>
+            <returns>List of matching volumes.</returns>
+        </member>
+        <member name="M:C9Native.Volumes.BySerialOne(System.String)">
+            <summary>
+            Get the one volume that should have this serial number. Throws if there are duplicates.
+            </summary>
+            <param name="aSerialNumber">String form of the volume serial number we're looking for.</param>
+            <returns>Matching volume or null if no match.</returns>
+        </member>
+        <member name="P:C9Native.Volumes.SerialNumbers">
+            <summary>
+            Retrieve a list of the volume serial numbers in the volumes we know of.
+            </summary>
+        </member>
+        <member name="M:C9Native.Volumes.ByLabel(System.String)">
+            <summary>
+            Get a list of zero of more volumes that have the specified volume label.
+            </summary>
+            <param name="aLabel">Label we're looking for.</param>
+            <returns>List of volumes that have that label.</returns>
+        </member>
+        <member name="P:C9Native.Volumes.Labels">
+            <summary>
+            Retrieve a list of label strings for the volumes we know about.
+            </summary>
+        </member>
         <member name="M:C9Native.Volumes.#ctor">
             <summary>
             Load this object up with the current volume list information.
             </summary>
+        </member>
+        <member name="M:C9Native.Volumes.GetEnumerator">
+            <summary>
+            Make this class enumerable
+            </summary>
+            <returns>an enumerator for the contents of this object.</returns>
         </member>
         <member name="T:C9Native.VolumeSpace">
             <summary>

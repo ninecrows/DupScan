@@ -634,6 +634,9 @@ namespace C9Native
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool CloseHandle(IntPtr hHandle);
 
+        // Marshal.GetDelegateForFunctionPointer
+        //public static Delegate GetDelegateForFunctionPointer(IntPtr ptr, Type t)
+        //A a = (A)Marshal.GetDelegateForFunctionPointer(intPtr, typeof(A));
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
         // ReSharper disable once UnusedMember.Local
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);

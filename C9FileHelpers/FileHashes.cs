@@ -11,23 +11,51 @@ namespace C9FileHelpers
     [Serializable]
     public class FileHashes
     {
-        public string fileHashSha256;
-        public string FileHashSha256 { get; }
+        /// <summary>
+        /// SHA 256 hash of the file contents.
+        /// </summary>
+        public string Sha256 { get; private set; }
 
-        [OptionalField] public string fileHashSha512;
+        /// <summary>
+        /// SHA 512 hash of the file contents.
+        /// </summary>
+        [field: OptionalField]
+        public string Sha512 { get; private set; }
 
-        [OptionalField] public string fileHashSha1;
+        /// <summary>
+        /// SHA1 hash of the file contents.
+        /// </summary>
+        [field: OptionalField]
+        public string Sha1 { get; private set; }
 
-        [OptionalField] public string fileHashMd5;
+        /// <summary>
+        /// MD5 hash of the file contents.
+        /// </summary>
+        [field: OptionalField]
+        public string Md5 { get; private set; }
 
-        [OptionalField] public string crc32;
+        /// <summary>
+        /// 32 bit CRC of the file contents.
+        /// </summary>
+        [field: OptionalField]
+        public string Crc32 { get; private set; }
 
-        private BufferSegments segments;
+        /// <summary>
+        /// Leading and trailing file parts for type checking.
+        /// </summary>
+        public BufferSegments Segments { get; private set; }
 
+        /// <summary>
+        /// Create an empty hash object.
+        /// </summary>
         public FileHashes()
         {
         }
 
+        /// <summary>
+        /// Compute the hashes for this file
+        /// </summary>
+        /// <param name="fileName">path to the file to be hashed.</param>
         public FileHashes(string fileName)
         {
             MakeHashes(fileName);
@@ -36,57 +64,44 @@ namespace C9FileHelpers
         /// <summary>
         /// Calculate hashes by reading the file and spinning threads to calculate hashes.
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="fileName">path to the file to be hashed.</param>
         public void MakeHashes(string fileName)
         {
-            var infile = File.OpenRead(fileName);
+            var buffer = File.ReadAllBytes(fileName);
 
-            byte[] buffer = File.ReadAllBytes(fileName);
-
-            using (SHA256 mySHA256 = SHA256.Create())
-            {
-                byte[] value = mySHA256.ComputeHash(buffer);
-
-                string valueBase64 = Convert.ToBase64String(value);
-
-                fileHashSha256 = valueBase64;
+            using (var mySha256 = SHA256.Create())
+            { 
+                Sha256 = ComputeHash(mySha256, buffer); 
             }
 
-            using (SHA512 mySHA512 = SHA512.Create())
+            using (var mySha512 = SHA512.Create())
             {
-                byte[] value = mySHA512.ComputeHash(buffer);
-
-                string valueBase64 = Convert.ToBase64String(value);
-
-                fileHashSha512 = valueBase64;
+                Sha512 = ComputeHash(mySha512, buffer);
             }
 
-            using (SHA1 mySHA1 = SHA1.Create())
+            using (var mySha1 = SHA1.Create())
             {
-                byte[] value = mySHA1.ComputeHash(buffer);
 
-                string valueBase64 = Convert.ToBase64String(value);
-
-                fileHashSha1 = valueBase64;
+                Sha1 = ComputeHash(mySha1, buffer);
             }
 
-            using (HashAlgorithm myMD5 = MD5.Create())
+            using (var myMd5 = MD5.Create())
             {
-                fileHashMd5 = ComputeHash(myMD5, buffer);
+                Md5 = ComputeHash(myMd5, buffer);
             }
 
-            var result = Crc32CAlgorithm.Compute(buffer);
+            var crc = Crc32Algorithm.Compute(buffer);
+            Crc32 = $"{crc:X8}";
 
-            var trad = Crc32Algorithm.Compute(buffer);
-
-            var segments = new BufferSegments(buffer, 64);
+            // Grab 64 bytes leading and trailing (if available)
+            Segments = new BufferSegments(buffer, 64);
         }
 
         private static string ComputeHash(HashAlgorithm algorithm, byte[] buffer)
         {
-            byte[] value = algorithm.ComputeHash(buffer);
+            var value = algorithm.ComputeHash(buffer);
 
-            string base64 = Convert.ToBase64String(value);
+            var base64 = Convert.ToBase64String(value);
 
             return base64;
         }
@@ -95,7 +110,7 @@ namespace C9FileHelpers
     /// <summary>
     /// Given a buffer and a size for lead and trail bits, extract what we can and provide it in various forms.
     /// </summary>
-    internal class BufferSegments
+    public class BufferSegments
     {
         /// <summary>
         /// Retrieve raw binary lead byte data.
@@ -131,6 +146,16 @@ namespace C9FileHelpers
         /// Retrieve the binary buffer data as base64 encoded string.
         /// </summary>
         public string TrailBase64 { get; }
+        
+        /// <summary>
+        /// Intel order magic number
+        /// </summary>
+        public string MagicIntel { get; }
+
+        /// <summary>
+        /// Motorola order magic number
+        /// </summary>
+        public string MagicMotorola { get; }
 
         /// <summary>
         /// Given a large buffer full of file data and a length, load this object with appropriate bits.
@@ -160,6 +185,16 @@ namespace C9FileHelpers
             {
                 LeadBytes = buffer;
                 TrailBytes = buffer;
+            }
+
+            // Sample magic number word in both byte orders.
+            if (buffer.Length > 2)
+            {
+                var intelMagicNumber = buffer[0] | (buffer[1] << 8);
+                MagicIntel = $"{intelMagicNumber:x4}";
+
+                var motorolaMagicNumber = buffer[1] | (buffer[0] << 8);
+                MagicMotorola = $"{motorolaMagicNumber:x4}";
             }
 
             // Now calculate the hex encoded versions

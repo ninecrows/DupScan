@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace C9FileHelpers
 {
@@ -16,7 +12,7 @@ namespace C9FileHelpers
         {
             path = fileName;
 
-            FileInfo information = new FileInfo(fileName);
+            FileInfo information = new (fileName);
 
             created = new ExTimeStamp(information.CreationTime); 
             
@@ -26,7 +22,7 @@ namespace C9FileHelpers
 
             directory = information.DirectoryName;
             fullPath = information.FullName;
-            String fileId = C9Native.GetFileInformation.GetFileIdentity(fileName); 
+            //var aFileId = C9Native.GetFileInformation.GetFileIdentity(fileName); 
         }
 
         public string path;
@@ -34,11 +30,9 @@ namespace C9FileHelpers
         public string directory;
         public long size;
 
-        public /*DateTime*/ ExTimeStamp created;
-
-        //public string created8601;
-        public /*DateTime*/ ExTimeStamp modified;
-        //public string modified8601;
+        public ExTimeStamp created;
+        
+        public ExTimeStamp modified;
 
         /// <summary>
         /// The path to the file (not including file name or drive letter) as an ordered list of path elements.
@@ -118,42 +112,29 @@ namespace C9FileHelpers
         /// </summary>
         [OptionalField] public BookInformation book;
 
-        public String GetName()
+        public string GetName()
         {
-            String checkPath;
-
-            var pieces = path.Split('\\');
+           var pieces = path.Split('\\');
 
             return (pieces.Last());
         }
 
-        public String GetFullPath()
+        public string GetFullPath()
         {
             return (directory + "\\" + GetName());
         }
 
-        public bool PathMatches(String realFile)
+        public bool PathMatches(string realFile)
         {
-            String fullPath = GetFullPath().ToLower();
-            String realPath = realFile.ToLower();
+            var aFullPath = GetFullPath().ToLower();
+            var realPath = realFile.ToLower();
 
-            return (fullPath.Equals(realPath));
+            return aFullPath.Equals(realPath);
         }
 
         public bool FileMatches(FileInfo realFile)
         {
-            bool result = false;
-
-            if (PathMatches(realFile.FullName))
-            {
-                if (size == realFile.Length)
-                {
-                    if (modified.Raw == realFile.LastWriteTime.Ticks)
-                    {
-                        result = true;
-                    }
-                }
-            }
+            var result = PathMatches(realFile.FullName) && size == realFile.Length && modified.Raw == realFile.LastWriteTime.Ticks;
 
             return result;
         }
