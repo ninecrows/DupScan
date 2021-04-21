@@ -80,8 +80,10 @@ namespace C9Native
         {
             Path = path;
 
-            using BaseFileHandle handle = BaseFileHandle.ReadOnlyHandleFactory(path);
-            LoadValues(handle);
+            using (BaseFileHandle handle = BaseFileHandle.ReadOnlyHandleFactory(path))
+            {
+                LoadValues(handle);
+            }
         }
 
         /// <summary>

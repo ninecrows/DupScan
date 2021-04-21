@@ -64,6 +64,5 @@ namespace C9Native
            // ReSharper disable once CommentTypo
            RAMDisk = 6        //DRIVE_RAMDISK
        }
-
     }
 }

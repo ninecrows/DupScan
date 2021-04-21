@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -7,7 +8,7 @@ namespace C9Native
     /// <summary>
     /// RAII Retrieve mounted paths for the provided volume.
     /// </summary>
-    public class VolumePathNames
+    public class VolumePathNames : IEnumerable<string>
     {
         /// <summary>
         /// The name of the volume we were asked to get mount paths for.
@@ -100,5 +101,15 @@ namespace C9Native
             [MarshalAs(UnmanagedType.LPWStr)] string lpszVolumeName,
             [Out] char[] lpszVolumePathNames, uint aBufferLength,
             ref uint aReturnLength);
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return _pathNames.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

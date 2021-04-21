@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "FindHashDuplicates": {
+      "commandName": "Project",
+      "commandLineArgs": "g:\\eBooks",
+      "nativeDebugging": true
+    }
+  }
+}

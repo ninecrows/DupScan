@@ -81,8 +81,10 @@ namespace C9Native
             // Remember the file path that we started with.
             Path = path;
 
+            string extpath = "\\\\?\\" + path;
+
             // Open the handle with all of the requested flags.
-            Handle = CreateFileW(path, inAccess, inShare, inSecurity, inCreation, inAttributes, inTemplate);
+            Handle = CreateFileW(extpath, inAccess, inShare, inSecurity, inCreation, inAttributes, inTemplate);
 
             // Grab and store the failure status if we didn't get a handle successfully.
             if (!IsHandleValid(Handle))

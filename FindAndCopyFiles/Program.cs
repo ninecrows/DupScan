@@ -94,43 +94,5 @@ namespace FindAndCopyFiles
                 informationHere.AddRange(files);
             }
         }
-
-#if false
-        static
-            string
-            MoveAndDontReplace(
-                string from,
-                string to
-            )
-        {
-            string final = "";
-
-            FileInfo fromInfo = new FileInfo(from);
-            string extension = fromInfo.Extension;
-            string name = fromInfo.Name;
-            string baseName = name.Substring(0, name.Length - extension.Length);
-
-            string tryTarget = to + "\\" + baseName + extension;
-            int bump = 1;
-            if (!File.Exists(tryTarget))
-            {
-
-            }
-
-            else
-            {
-                tryTarget = to + "\\" + baseName + $" ({bump})" + extension;
-                while (File.Exists(tryTarget))
-                {
-                    bump += 1;
-                    tryTarget = to + "\\" + baseName + $" ({bump})" + extension;
-                }
-            }
-
-            final = tryTarget;
-
-            return (final);
-        }
-#endif
     }
 }
