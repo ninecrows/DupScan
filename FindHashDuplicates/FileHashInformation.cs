@@ -31,13 +31,19 @@ namespace FindHashDuplicates
         [JsonProperty] [BsonElement("basepath")]
         private string _basepath;
 
+        public string BasePath => _basepath;
+
         // Unique file id for this file
         [JsonProperty] [BsonElement("fileid")] 
         private string _fileid;
 
+        public string FileId => _fileid;
+
         // volume id for this file.
         [JsonProperty] [BsonElement("volumeid")]
         private string _volumeid;
+
+        public string VolumeId => _volumeid;
 
         // Individual path components for searching.
         [JsonProperty] [BsonElement("pathcomponents")]

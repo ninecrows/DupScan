@@ -26,6 +26,8 @@ namespace FindHashDuplicates
                 whereToScan = args[0];
             }
 
+            bool doMoveDuplicates = true;
+
             Console.WriteLine($"Scan \"{whereToScan}\"");
 
             // Get our list of files in this area.
@@ -69,7 +71,10 @@ namespace FindHashDuplicates
                 allKnownVolumes = new(volumesInDatabase.AsQueryable().ToList());
             }
             
-            var collection = database.GetCollection<FileHashInformation>("HashIndex");
+            var collection = database.GetCollection<FileHashInformation>("HashIndexOut");
+            var checkCollection = database.GetCollection<FileHashInformation>("HashIndexCheck");
+
+#if false
             var outcollection = database.GetCollection<FileHashInformation>("HashIndexOut");
 
             // Update the schema so we have 'real' information.
@@ -112,6 +117,7 @@ namespace FindHashDuplicates
                     }
                 }
             }
+#endif
 
             // Index of known files by hash.
             var index = new Dictionary<string, FileHashInformation>();
@@ -122,25 +128,47 @@ namespace FindHashDuplicates
                 foreach (var item in files)
                 {
                     var thisFile = new FileHashInformation(item, liveVolumes);
+                    //thisFile.FixIfMissing(liveVolumes);
                     //var thisId = new FileInformationFileId(item);
 
-                    var filter = Builders<FileHashInformation>.Filter.Eq("path", item);
+                    var filter1 = Builders<FileHashInformation>.Filter.Eq("basepath", thisFile.BasePath);
+                    //var filter2 = Builders<FileHashInformation>.Filter.Eq("volumeid", thisFile.VolumeId);
+                    //var filter = Builders<FileHashInformation>.Filter.And(filter1, filter2);
+
+                    // Another way to build this composite filter?
+                    //var builder = Builders<FileHashInformation>.Filter;
+                    //var filterz =
+                     //   builder.Eq("volumeid", thisFile.VolumeId) &
+                      //  builder.Eq("basepath", thisFile.BasePath);
+
+                    //Builders<FileHashInformation>.Filter.Eq("path", item);
                     var collation = new FindOptions()
-                        {Collation = new Collation("en_US", strength: CollationStrength.Secondary)};
-                    var findOptions = new FindOptions()
-                        {Collation = new Collation("en", strength: CollationStrength.Primary)};
-                    var hits = collection.Find(filter, collation);
+                        {Collation = new Collation("en", strength: CollationStrength.Secondary)};
+                    //var findOptions = new FindOptions()
+                    //    {Collation = new Collation("en", strength: CollationStrength.Primary)};
+                    var hits = collection.Find(filter1, collation);
                     var countHits = hits.Count();
                     var thisList = hits.ToList();
+
+                    int thisHits = 0;
+                    FileHashInformation thisMatch = null;
+                    foreach (var itemFound in thisList)
+                    {
+                        if (itemFound.VolumeId == thisFile.VolumeId)
+                        {
+                            thisMatch = itemFound;
+                            thisHits++;
+                        }
+                    }
 
                     itemCount++;
                     itemsLeft--;
 
                     // If it looks like we've already processed this one...
-                    if (countHits > 0 && thisFile.IsMatch(thisList[0]))
+                    if (thisMatch != null && thisFile.IsMatch(thisMatch))
                     {
                         // Announce if we get more than one hit for a given item...this is probably an error.
-                        if (countHits > 1)
+                        if (thisHits > 1)
                         {
                             Console.WriteLine($"Multiple hits {countHits} => \"{item}\"");
                             foreach (var ii in hits.ToEnumerable())
@@ -150,7 +178,7 @@ namespace FindHashDuplicates
                         }
 
                         {
-                            var thisHit = hits.FirstOrDefault();
+                            var thisHit = thisMatch; // hits.FirstOrDefault();
 
                             // Inject the stored hash code.
                             thisFile.AddHash(thisHit.Sha256);
@@ -166,9 +194,12 @@ namespace FindHashDuplicates
                         {
                             Console.WriteLine($"Keep: \"{index[thisFile.Sha256].Path}\"");
 
-                            // Update this record in the database to 'exists'.
-                            string stub = item.Substring(whereToScan.Length);
-                            ShiftFile(whereHold + stub, item);
+                            if (doMoveDuplicates)
+                            {
+                                // Update this record in the database to 'exists'.
+                                string stub = item.Substring(whereToScan.Length);
+                                ShiftFile(whereHold + stub, item);
+                            }
                         }
 
                         // No such file yet, add this one in.
@@ -186,6 +217,7 @@ namespace FindHashDuplicates
                             Console.Write($"{itemsLeft}: ");
                             thisFile.MakeHash();
                             collection.InsertOne(thisFile);
+                            checkCollection.InsertOne(thisFile);
                             Console.WriteLine($"\"{item}\" Done");
 
                             // A file with this same contents is elsewhere in this area.
@@ -193,9 +225,12 @@ namespace FindHashDuplicates
                             {
                                 Console.WriteLine($"Keep: \"{index[thisFile.Sha256].Path}\"");
 
-                                // Update this record in the database to 'exists'.
-                                string stub = item.Substring(whereToScan.Length);
-                                ShiftFile(whereHold + stub, item);
+                                if (doMoveDuplicates)
+                                {
+                                    // Update this record in the database to 'exists'.
+                                    string stub = item.Substring(whereToScan.Length);
+                                    ShiftFile(whereHold + stub, item);
+                                }
                             }
 
                             // No such file yet, add this one in.
@@ -216,6 +251,7 @@ namespace FindHashDuplicates
                                     var hash = sha256.ComputeHash(fs);
                                     thisFile.AddHash(Convert.ToBase64String(hash));
                                     collection.InsertOne(thisFile);
+                                    checkCollection.InsertOne(thisFile);
                                 }
                             }
                         }
