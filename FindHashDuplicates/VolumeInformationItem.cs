@@ -16,6 +16,7 @@ namespace FindHashDuplicates
     public class VolumeInformationItem
     {
         [BsonId] private ObjectId _id;
+        public ObjectId Id { get; }
 
         [JsonProperty]
         [BsonElement("label")]

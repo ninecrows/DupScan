@@ -57,11 +57,19 @@ namespace FindHashDuplicates
                 string thisPath = searchHere[0];
                 searchHere.RemoveAt(0);
 
-                string[] files = Directory.GetFiles(thisPath);
-                string[] folders = Directory.GetDirectories(thisPath);
+                // For now we just ignore any paths that we can't get at.
+                try
+                {
+                    string[] files = Directory.GetFiles(thisPath);
+                    string[] folders = Directory.GetDirectories(thisPath);
 
-                searchHere.AddRange(folders);
-                _files.AddRange(files);
+                    searchHere.AddRange(folders);
+                    _files.AddRange(files);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Can't see \"{thisPath}\" Ignoring it\n{ex.Message}");
+                }
             }
 
             _files.Sort();

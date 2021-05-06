@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using C9Native;
 using JetBrains.Annotations;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace FindHashDuplicates
 {
@@ -76,6 +77,56 @@ namespace FindHashDuplicates
         public VolumeInformationItem ByVsn(string whichone)
         {
             return (_byvsn[whichone]);
+        }
+
+        public string RootByVsn(string whichone)
+        {
+            return (_byvsn[whichone].Paths[0]);
+        }
+
+
+        public string RootByPath(string where)
+        {
+            string matchPath = null;
+
+            foreach (var path in _bypath.Keys)
+            {
+                var length = path.Length;
+                if (path.ToLower() == where.Substring(0, path.Length).ToLower())
+                {
+                    // If we don't yet have a match then save this one.
+                    if (matchPath == null)
+                    {
+                        matchPath = path;
+                    }
+
+                    // We're looking for the longest match as that is the most specific.
+                    else if (path.Length > matchPath.Length)
+                    {
+                        matchPath = path;
+                    }
+                }
+            }
+
+            return matchPath;
+        }
+
+        /// <summary>
+        /// Given a file path, look up the volume that corresponds to that path (or null if no match).
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public VolumeInformationItem ByPath(string where)
+        {
+            string volumeWhere = RootByPath(where);
+            if (volumeWhere != null)
+            {
+                return _bypath[volumeWhere];
+            }
+            else
+            {
+                    return null;
+            }
         }
 
         /// <summary>

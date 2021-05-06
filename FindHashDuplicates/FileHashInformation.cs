@@ -9,6 +9,7 @@ using C9Native;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using Exception = System.Exception;
 using TimeSpan = System.TimeSpan;
 
 namespace FindHashDuplicates
@@ -18,6 +19,7 @@ namespace FindHashDuplicates
     class FileHashInformation
     {
         [BsonId] private ObjectId _id;
+        public ObjectId Id { get; }
 
         [JsonProperty] [BsonElement("version")]
         private int _version = 1;
@@ -81,6 +83,9 @@ namespace FindHashDuplicates
         [JsonProperty][BsonElement("exists")]
         public bool Exists { get; set; } = false;
 
+        // Status of access to this file. Null if we got what we needed.
+        [JsonProperty] [BsonElement("status")] public string Status { get; set; } = null;
+
         public
         FileHashInformation(
             string path,
@@ -104,26 +109,34 @@ namespace FindHashDuplicates
                 _modified = _information.LastWriteTimeUtc;
 
                 // Get the native information related to this file.
-                var extra = new FileInformationFileId(path);
-                _fileid = extra.FullIdentifier;
-                _volumeid = extra.VolumeSerialNumber;
-
-                // This should work...something is pretty badly wrong if we don't find it as this is the list of all volumes here.
-                if (volumes.Exists(_volumeid))
+                try
                 {
-                    var hmm = volumes.ByVsn(_volumeid);
-                    var heads = hmm.Paths;
-                    foreach (var head in heads)
+                    var extra = new FileInformationFileId(path);
+                    _fileid = extra.FullIdentifier;
+                    _volumeid = extra.VolumeSerialNumber;
+
+
+                    // This should work...something is pretty badly wrong if we don't find it as this is the list of all volumes here.
+                    if (volumes.Exists(_volumeid))
                     {
-                        if (head.ToLower() == path.Substring(0, head.Length).ToLower())
+                        var hmm = volumes.ByVsn(_volumeid);
+                        var heads = hmm.Paths;
+                        foreach (var head in heads)
                         {
-                            _basepath = path.Substring(head.Length);
+                            if (head.ToLower() == path.Substring(0, head.Length).ToLower())
+                            {
+                                _basepath = path.Substring(head.Length);
+                            }
                         }
                     }
+                    else
+                    {
+                        Console.WriteLine($"Could not find {_volumeid}");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Could not find {_volumeid}");
+                    Console.WriteLine($"Failed getting native info {ex.Message}");
                 }
 
                 // Grab file name and path parts to make searching easier.
@@ -202,17 +215,24 @@ namespace FindHashDuplicates
             if (File.Exists(_path))
             {
                 // Get the native information related to this file.
-                var extra = new FileInformationFileId(_path);
-                if (_fileid == null)
+                try
                 {
-                    changed = true;
-                    _fileid = extra.FullIdentifier;
-                }
+                    var extra = new FileInformationFileId(_path);
+                    if (_fileid == null)
+                    {
+                        changed = true;
+                        _fileid = extra.FullIdentifier;
+                    }
 
-                if (_volumeid == null)
+                    if (_volumeid == null)
+                    {
+                        changed = true;
+                        _volumeid = extra.VolumeSerialNumber;
+                    }
+                }
+                catch (Exception ex)
                 {
-                    changed = true;
-                    _volumeid = extra.VolumeSerialNumber;
+                    Console.WriteLine($"Failed in fix if missing {ex.Message}");
                 }
             }
 
@@ -257,22 +277,29 @@ namespace FindHashDuplicates
                         }
                     }
 
-                    // Get the native information related to this file.
-                    var extra = new FileInformationFileId(_path);
-                    if (_fileid == null)
+                    try
                     {
-                        changed = true;
-                        _fileid = extra.FullIdentifier;
-                    }
+                        // Get the native information related to this file.
+                        var extra = new FileInformationFileId(_path);
+                        if (_fileid == null)
+                        {
+                            changed = true;
+                            _fileid = extra.FullIdentifier;
+                        }
 
-                    if (_volumeid == null)
+                        if (_volumeid == null)
+                        {
+                            changed = true;
+                            _volumeid = extra.VolumeSerialNumber;
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        changed = true;
-                        _volumeid = extra.VolumeSerialNumber;
+                        Console.WriteLine($"{ex.Message}");
                     }
 
                     // This should work...something is pretty badly wrong if we don't find it as this is the list of all volumes here.
-                    if (_basepath == null && volumes.Exists(_volumeid))
+                    if (_basepath == null && _volumeid != null && volumes.Exists(_volumeid))
                     {
                         var hmm = volumes.ByVsn(_volumeid);
                         var heads = hmm.Paths;

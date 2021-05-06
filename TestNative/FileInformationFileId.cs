@@ -82,7 +82,14 @@ namespace C9Native
 
             using (BaseFileHandle handle = BaseFileHandle.ReadOnlyHandleFactory(path))
             {
-                LoadValues(handle);
+                if (handle.IsOk)
+                {
+                    LoadValues(handle);
+                }
+                else
+                {
+                    throw new Exception($"Failed to open handle {handle.Status.Code}/{handle.Status.Message} \"{path}\"");
+                }
             }
         }
 
@@ -130,6 +137,7 @@ namespace C9Native
             else
             {
                 Status = new Win32ErrorCode();
+                throw new Exception($"Failed to get file info by handle {Status.Code}/{Status.Message} \"{Path}\"");
             }
         }
 
