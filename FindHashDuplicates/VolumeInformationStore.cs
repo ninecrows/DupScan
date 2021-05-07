@@ -92,7 +92,8 @@ namespace FindHashDuplicates
             foreach (var path in _bypath.Keys)
             {
                 var length = path.Length;
-                if (path.ToLower() == where.Substring(0, path.Length).ToLower())
+                if (path.Length <= where.Length && 
+                    path.ToLower() == where.Substring(0, path.Length).ToLower())
                 {
                     // If we don't yet have a match then save this one.
                     if (matchPath == null)

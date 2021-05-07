@@ -19,7 +19,12 @@ namespace FindHashDuplicates
     class FileHashInformation
     {
         [BsonId] private ObjectId _id;
-        public ObjectId Id { get; }
+        
+        [BsonIgnore]
+        public ObjectId Id
+        {
+            get => _id;
+        }
 
         [JsonProperty] [BsonElement("version")]
         private int _version = 1;

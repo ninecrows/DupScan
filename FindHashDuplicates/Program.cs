@@ -216,17 +216,21 @@ namespace FindHashDuplicates
                     var countHits = hits.Count();
                     var thisList = hits.ToList();
 
+                    long keepCount = 0;
+                    long removedCount = 0;
+
                     foreach (var item in thisList)
                     {
                         string basePath = liveVolumes.RootByVsn(item.VolumeId);
                         string fullPath = basePath + item.BasePath;
                         if (File.Exists(fullPath))
                         {
-
+                            keepCount += 1;
                         }
                         else
                         {
-                            Console.WriteLine($"Removed: \"{fullPath}\"");
+                            removedCount += 1;
+                            Console.WriteLine($"Removed: {keepCount}/{removedCount} - \"{fullPath}\"");
 
                             // Write to database of removed files HashIndexHistory and remove from HashIndexOut.
                             collectionHistory.InsertOne(item);
@@ -235,21 +239,27 @@ namespace FindHashDuplicates
                             var removeList = collection.Find(removeFilter);
                             var removeCount = removeList.Count();
                             var removeRecords = removeList.ToList();
-                            //collection.DeleteOne(removeFilter);
+                            collection.DeleteOne(removeFilter);
                         }
                     }
+                    Console.WriteLine($"Keep: {keepCount}, Removed: {removedCount}");
                 }
 
+#if false
                 // Index of file information from file path.
                 Dictionary<string, FileHashInformation> infoIndex = new();
                 {
+                    var beginsTime = DateTime.Now;
                     foreach (var item in files)
                     {
                         var thisFile = new FileHashInformation(item, liveVolumes);
                         infoIndex[thisFile.BasePath] = thisFile;
                     }
-                }
 
+                    var endTime = DateTime.Now;
+                    Console.WriteLine($"Detailed info done in: {endTime - beginsTime}");
+                }
+#endif
                 {
                     long itemCount = 0;
                     long itemsLeft = files.Count;

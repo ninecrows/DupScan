@@ -2,7 +2,7 @@
   "profiles": {
     "FindHashDuplicates": {
       "commandName": "Project",
-      "commandLineArgs": "i:\\",
+      "commandLineArgs": "e:\\",
       "nativeDebugging": true
     }
   }
