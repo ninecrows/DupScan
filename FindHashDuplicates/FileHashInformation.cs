@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using C9Native;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Exception = System.Exception;
@@ -351,6 +352,22 @@ namespace FindHashDuplicates
             _version = 1;
 
             return changed;
+        }
+
+        public void InvalidateId()
+        {
+            _id = ObjectId.GenerateNewId();
+        }
+
+        public FileHashInformation NewItem()
+        {
+            var capture = this.ToBson();
+            var reconstitute = BsonSerializer.Deserialize<FileHashInformation>(capture);
+
+            reconstitute.InvalidateId();
+            //_id = ObjectId.GenerateNewId();
+
+            return reconstitute;
         }
 
         /// <summary>

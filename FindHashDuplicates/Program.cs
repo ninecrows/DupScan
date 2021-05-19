@@ -226,16 +226,31 @@ namespace FindHashDuplicates
                         if (File.Exists(fullPath))
                         {
                             keepCount += 1;
+                            if (keepCount % 1000 == 0)
+                            {
+                                Console.WriteLine($"Processing: {keepCount}/{removedCount}");
+                            }
                         }
                         else
                         {
                             removedCount += 1;
                             Console.WriteLine($"Removed: {keepCount}/{removedCount} - \"{fullPath}\"");
 
-                            // Write to database of removed files HashIndexHistory and remove from HashIndexOut.
-                            collectionHistory.InsertOne(item);
-
+                            // Need to grab the ID of the item to remove here before we mess with it.
                             var removeFilter = Builders<FileHashInformation>.Filter.Eq("_id", item.Id);
+
+                            // Write to database of removed files HashIndexHistory and remove from HashIndexOut.
+                            try
+                            {
+                                collectionHistory.InsertOne(item);
+                            }
+                            catch (MongoDB.Driver.MongoWriteException myException)
+                            {
+                                var newItem = item.NewItem();
+                                collectionHistory.InsertOne(newItem);
+                            }
+
+                            
                             var removeList = collection.Find(removeFilter);
                             var removeCount = removeList.Count();
                             var removeRecords = removeList.ToList();
@@ -260,6 +275,8 @@ namespace FindHashDuplicates
                     Console.WriteLine($"Detailed info done in: {endTime - beginsTime}");
                 }
 #endif
+
+                Console.WriteLine($"Begin processing files for hashing...");
                 {
                     long itemCount = 0;
                     long itemsLeft = files.Count;
