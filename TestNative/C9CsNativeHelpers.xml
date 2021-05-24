@@ -858,6 +858,58 @@
             </summary>
             <param name="handle">Native handle in wrapper for the file to be examined.</param>
         </member>
+        <member name="T:C9Native.PrivilegeInformation">
+            <summary>
+            Construct from a privilege name or LUID and provide all information about it.
+            </summary>
+        </member>
+        <member name="P:C9Native.PrivilegeInformation.luid">
+            <summary>
+            Return the LUID that identifies this privilege.
+            </summary>
+        </member>
+        <member name="P:C9Native.PrivilegeInformation.name">
+            <summary>
+            Return the formal name of this privilege.
+            </summary>
+        </member>
+        <member name="P:C9Native.PrivilegeInformation.display">
+            <summary>
+            Return the human readable description of this privilege.
+            </summary>
+        </member>
+        <member name="M:C9Native.PrivilegeInformation.#ctor(System.String)">
+            <summary>
+            Given the name of a privilege, construct an object with all information we might need about it.
+            </summary>
+            <param name="privilegename">Name of the privilege.</param>
+        </member>
+        <member name="M:C9Native.PrivilegeInformation.#ctor(C9Native.LUID)">
+            <summary>
+            Given the LUID for a privilege construct an object with all the information we might need.
+            </summary>
+            <param name="luid">LUID for the privilege we're interested in.</param>
+        </member>
+        <member name="M:C9Native.PrivilegeInformation.Describe">
+            <summary>
+            Return a full human readable description of this privilege.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:C9Native.PrivilegeInformation.NameToDisplayName(System.String)">
+            <summary>
+            Given a privilege name, return the human readable display name for that privilege.
+            </summary>
+            <param name="name">Name of the privilege we're interested in.</param>
+            <returns>Human readable string that describes the provided privilege name.</returns>
+        </member>
+        <member name="M:C9Native.PrivilegeInformation.LuidToName(C9Native.LUID)">
+            <summary>
+            Given an LUID return the string name for that LUID.
+            </summary>
+            <param name="luid">LUID that we want the name of.</param>
+            <returns>Name of the LUID provided as a privilege.</returns>
+        </member>
         <member name="T:C9Native.ReadFileHandle">
             <summary>
             Wrapper with RAII constructor for opening a read only native file handle.
@@ -868,6 +920,13 @@
             RAII CTOR create and load this object with a native file handle that points to the specified path.
             </summary>
             <param name="path">Path to the file we want a native handle for.</param>
+        </member>
+        <member name="M:C9Native.TokenRights.Activate(System.String)">
+            <summary>
+            I*f the process has the privilege available but not enabled, enable it.
+            </summary>
+            <param name="name">Name of the privilege we want to enable.</param>
+            <returns>true if the privilege is enabled after this call returns.</returns>
         </member>
         <member name="T:C9Native.Volume">
             <summary>

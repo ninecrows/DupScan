@@ -78,6 +78,46 @@ namespace FindHashDuplicates
                 }
             }
 
+            {
+                var rights = new C9Native.TokenRights();
+                var rightslist = rights.GetTokenRightsList();
+
+                foreach (var item in rightslist)
+                {
+                    Console.WriteLine($"{item.Describe()}");
+                }
+
+                {
+                    bool backupok = rights.Activate("SeBackupPrivilege");
+                    Console.WriteLine($"Backup enabled {backupok}");
+                }
+
+                {
+                    var ok = rights.Activate("SeRestorePrivilege");
+                    Console.WriteLine($"Restore enabled {ok}");
+                }
+
+                {
+                    var ok = rights.Activate("SeChangeNotifyPrivilege");
+                    Console.WriteLine($"Bypass enabled {ok}");
+                }
+
+                {
+                    var ok = rights.Activate("SeCreateSymbolicLinkPrivilege");
+                    Console.WriteLine($"SymLink enabled {ok}");
+                }
+
+                {
+                    var ok = rights.Activate("SeTcbPrivilege");
+                    Console.WriteLine($"TCB enabled {ok}");
+                }
+                
+                {
+                    var ok = rights.Activate("SeDebugPrivilege");
+                    Console.WriteLine($"Debug enabled {ok}");
+                }
+            }
+
             if (pathRoots.Count == 0 && !doOnlyVolumes)
             {
                 Console.WriteLine("Nothing to do, so we're done");
